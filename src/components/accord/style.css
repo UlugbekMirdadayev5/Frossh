@@ -1,0 +1,11 @@
+.accordion-header {
+  cursor: pointer;
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.accordion-container .accordion-content {
+  overflow: hidden;
+  transition: height 0.3s ease-out;
+}

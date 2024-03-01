@@ -1,0 +1,20 @@
+.filterpage {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #fff;
+  padding: 55px 0;
+}
+.f-left {
+  width: 30%;
+  height: 100vh;
+  padding-top: 55px;
+}
+.f-right {
+  width: 70%;
+}
+
+.yangicard > div {
+  width: 277px;
+  height: 399px;
+}

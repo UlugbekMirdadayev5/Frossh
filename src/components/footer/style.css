@@ -1,0 +1,54 @@
+footer {
+  background: #363636;
+  padding: 84px 0px;
+}
+
+footer .container{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.f-about,
+.f-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.f-about p,
+.f-contact p,
+.f-networks p {
+  color: #fff;
+  font-family: Poppins;
+  font-size: 36.65px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding-bottom: 47px;
+}
+.f-about a,
+.f-contact a {
+  color: #fff;
+  font-family: Poppins;
+  font-size: 22.65px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-top: 17px;
+}
+.social {
+  display: flex;
+  align-items: center;
+  gap: 98px;
+}
+.app-download {
+  display: flex;
+  align-items: center;
+  gap: 55px;
+  margin-top: 40px;
+}
+.app-download img {
+  width: 250px;
+  height: 75px;
+  object-fit: contain;
+}

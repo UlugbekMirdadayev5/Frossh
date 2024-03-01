@@ -1,0 +1,213 @@
+.register {
+  background-color: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(90deg, white 50%, #8ae79d 50%);
+}
+
+.register-card {
+  width: 1614px;
+  height: calc(100% - 192px);
+  flex-shrink: 0;
+  border-radius: 57px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0px 0px 29.5px 0px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reg-card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding-top: 55px;
+}
+
+.reg-card-left > p {
+  color: #5d6661;
+  font-family: Poppins;
+  font-size: 55.9px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.reg-card-register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  height: 100%;
+}
+
+.reg-card-register > form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 100%;
+  padding: 70px 0;
+}
+
+.reg-card-register > form > p {
+  color: #5d6661;
+  font-family: Poppins;
+  font-size: 36.65px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.reg-card-register form input {
+  width: 574px;
+  height: 91px;
+  flex-shrink: 0;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0px 4px 11px 0px rgba(0, 0, 0, 0.25);
+  border: none;
+  padding-left: 58px;
+  color: rgba(93, 102, 97, 0.5);
+  font-family: Poppins;
+  font-size: 36.65px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.reg-card-register > ::placeholder {
+  color: rgba(93, 102, 97, 0.5);
+  font-size: 36.65px;
+  font-weight: 400;
+}
+
+.reg-card-register > form > button {
+  width: 379px;
+  height: 77px;
+  flex-shrink: 0;
+  border-radius: 18px;
+  background: #3498db;
+  color: #fff;
+  font-family: Poppins;
+  font-size: 36.65px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+/* modal */
+.modal {
+  width: 100%;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.01);
+  box-shadow: 0px 0px 29.5px 0px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(7.949999809265137px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* display: none; */
+}
+.modal-card {
+  width: 792px;
+  height: 580px;
+  border-radius: 57px;
+  background: #fff;
+  box-shadow: 0px 0px 29.5px 0px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 65px 170px;
+}
+
+.modal-card > p {
+  color: #5d6661;
+  text-align: center;
+  font-family: Poppins;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.modal-card > button {
+  width: 267px;
+  height: 77px;
+  flex-shrink: 0;
+  border-radius: 18px;
+  background: #3498db;
+  color: #fff;
+  font-family: Poppins;
+  font-size: 36.65px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+
+
+.modal-true{
+  width: 100%;
+  height: 100vh;
+background: rgba(255, 255, 255, 0.01);
+box-shadow: 0px 0px 29.5px 0px rgba(0, 0, 0, 0.25);
+backdrop-filter: blur(7.949999809265137px);
+position: fixed;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+
+.truecart{
+  display: flex;
+width: 702px;
+height: 566px;
+padding: 71px 145px;
+flex-direction: column;
+align-items: center;
+gap: 35px;
+flex-shrink: 0;
+border-radius: 57px;
+background: #FFF;
+box-shadow: 0px 0px 29.5px 0px rgba(0, 0, 0, 0.25);
+backdrop-filter: blur(20px);
+}
+
+.truecart > p{
+  color: #5D6661;
+text-align: center;
+font-family: Poppins;
+font-size: 36.65px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+.truecart > button{
+  display: inline-flex;
+padding: 11px 54px;
+justify-content: center;
+align-items: center;
+gap: 10px;
+border-radius: 18px;
+background: #2ECC71;
+box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.50);
+color: #FFF;
+font-family: Poppins;
+font-size: 22.65px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
