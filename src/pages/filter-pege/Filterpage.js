@@ -1,33 +1,28 @@
-import React from "react";
-import "./style.css";
-import { useForm } from "react-hook-form";
-import Select from "components/select";
-import { Card } from "components/card";
-import Checkbox from "components/checkbox";
-import AccordionDynamicHeight from "components/accord";
+import React from 'react';
+import './style.css';
+import { useForm } from 'react-hook-form';
+import Select from 'components/select';
+import { Card } from 'components/card';
+import Checkbox from 'components/checkbox';
+import AccordionDynamicHeight from 'components/accord';
 //chakra range slayder
-import {
-  RangeSlider,
-  RangeSliderTrack,
-  RangeSliderFilledTrack,
-  RangeSliderThumb,
-} from "@chakra-ui/react";
+import { RangeSlider, RangeSliderTrack, RangeSliderFilledTrack, RangeSliderThumb } from '@chakra-ui/react';
 
 export default function Filterpage() {
   const {
     handleSubmit,
     formState: { errors },
     control,
-    register,
+    register
   } = useForm({
     defaultValues: {
-      holati: "",
-      joy: "",
-      month: "",
-      tur: "",
-      type: "",
-      prepayment: null,
-    },
+      holati: '',
+      joy: '',
+      month: '',
+      tur: '',
+      type: '',
+      prepayment: null
+    }
   });
 
   const onSubmit = (values) => console.log(values);
@@ -41,102 +36,148 @@ export default function Filterpage() {
         <div className="f-left">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Select
-              error={errors["tur"]}
-              name={"tur"}
-              label={"Joy turini tanlang"}
+              error={errors['tur']}
+              name={'tur'}
+              label={'Joy turini tanlang'}
               options={[
                 {
-                  value: "Kvartira",
-                  label: "Kvartira",
+                  value: 'Kvartira',
+                  label: 'Kvartira'
                 },
                 {
-                  value: "Xonadon",
-                  label: "Xonadon",
+                  value: 'Xonadon',
+                  label: 'Xonadon'
                 },
                 {
-                  value: "Quruq yer",
-                  label: "Quruq yer",
+                  value: 'Quruq yer',
+                  label: 'Quruq yer'
                 },
                 {
-                  value: "Biznes uchun joy",
-                  label: "Biznes uchun joy",
+                  value: 'Biznes uchun joy',
+                  label: 'Biznes uchun joy'
                 },
                 {
-                  value: "Turar joy majmuasi",
-                  label: "Turar joy majmuasi",
-                },
+                  value: 'Turar joy majmuasi',
+                  label: 'Turar joy majmuasi'
+                }
               ]}
               control={control}
               required
             />
+
+            <div className="input-rpogress">
+              <p>Hajmi</p>
+              <div className="input-size">
+                <input type="text" placeholder="20m2" />
+                <input type="text" placeholder="100m2" />
+              </div>
+            </div>
+
             {/* //ragne slayder */}
-            <RangeSlider aria-label={["min", "max"]} defaultValue={[10, 30]}>
-              <RangeSliderTrack>
-                <RangeSliderFilledTrack />
-              </RangeSliderTrack>
-              <RangeSliderThumb index={0} />
-              <RangeSliderThumb index={1} />
-            </RangeSlider>
-            <Checkbox
-              type="radio"
-              name={"buy_type"}
-              value={"buy"}
-              label={"Sotib olish"}
-              register={register}
-            />
-            <Checkbox
-              type="radio"
-              name={"buy_type"}
-              value={"sell"}
-              label={"Ijaraga olish"}
-              register={register}
-            />
+            <div className="range-slayder">
+              <RangeSlider
+                ariaLabel={['min', 'max']}
+                defaultValue={[10, 30]}
+                sx={{
+                  color: 'white',
+                  width: '317px',
+                  fontSize: '50px'
+                }}
+              >
+                <RangeSliderTrack>
+                  <RangeSliderFilledTrack />
+                </RangeSliderTrack>
+                <RangeSliderThumb maxW="960px" index={0} />
+                <RangeSliderThumb index={1} />
+              </RangeSlider>
+              <div className="input-rpogress">
+                <p>Narxi</p>
+                <div className="input-size">
+                  <input type="number" placeholder="100.000 USD" />
+                  <input type="number" placeholder="100m2" />
+                </div>
+              </div>
+              <RangeSlider
+                ariaLabel={['min', 'max']}
+                defaultValue={[10, 30]}
+                sx={{
+                  color: 'white',
+                  width: '317px',
+                  fontSize: '50px'
+                }}
+              >
+                <RangeSliderTrack>
+                  <RangeSliderFilledTrack />
+                </RangeSliderTrack>
+                <RangeSliderThumb index={0} />
+                <RangeSliderThumb index={1} />
+              </RangeSlider>
+            </div>
             <Select
-              error={errors["tur"]}
-              name={"tur"}
-              label={"Ta’mir holati"}
+              error={errors['tur']}
+              name={'tur'}
+              label={'Ta’mir holati'}
               options={[
                 {
-                  value: "Yomon",
-                  label: "Yomon",
+                  value: 'Yomon',
+                  label: 'Yomon'
                 },
                 {
-                  value: "O’rtacha",
-                  label: "O’rtacha",
+                  value: 'O’rtacha',
+                  label: 'O’rtacha'
                 },
                 {
-                  value: "Yaxshi",
-                  label: "Yaxshi",
-                },
+                  value: 'Yaxshi',
+                  label: 'Yaxshi'
+                }
               ]}
               control={control}
               required
             />
+            <Checkbox type="radio" name={'buy_type'} value={'buy'} label={'Sotib olish'} register={register} />
+            <Checkbox type="radio" name={'buy_type'} value={'sell'} label={'Ijaraga olish'} register={register} />
+            <p id="v">viloyatlar</p>
             <AccordionDynamicHeight
+              name="buy_type"
+              header={<p>Yashirish</p>}
               body={
                 <div>
-                  <Checkbox
-                    type="radio"
-                    name={"buy_type"}
-                    value={"buy"}
-                    label={"Sotib olish"}
-                    register={register}
-                  />
-                  <Checkbox
-                    type="radio"
-                    name={"buy_type"}
-                    value={"sell"}
-                    label={"Ijaraga olish"}
-                    register={register}
-                  />
+                  <Checkbox type="radio" name="buy_type" value="buy" label="Andijon" register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Buxoro " register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Farg'ona" register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Jizzax " register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Namangan " register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Navoiy " register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Qashqadaryo " register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Qoraqalpoq" register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Samarqand " register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Sirdaryo " register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Surxondaryo" register={register} />
+                  <Checkbox type="radio" name="buy_type" value="sell" label="Toshkent" register={register} />
                 </div>
               }
             />
-            <AccordionDynamicHeight />
+            <p id="v">Qo`shimcha qulayliklar</p>
+            <AccordionDynamicHeight
+              name="buy_type"
+              header={<p>Yashirish</p>}
+              body={
+                <div className="checkboxes">
+                  <Checkbox name={'gas'} label={'Gaz'} register={register} />
+                  <Checkbox name={'water'} label={'Suv'} register={register} />
+                  <Checkbox name={'electric'} label={'Elektr energiya'} register={register} />
+                  <Checkbox name={'internet'} label={'Internet'} register={register} />
+                  <Checkbox name={'air_conditioning'} label={'Konditsioner'} register={register} />
+                  <Checkbox name={'refrigerator'} label={'Muzlatgich'} register={register} />
+                  <Checkbox name={'tv'} label={'Televizor'} register={register} />
+                  <Checkbox name={'washing_machine'} label={'Kiryuvish mashinasi'} register={register} />
+                </div>
+              }
+            />
           </form>
         </div>
         <div className="f-right">
-          <div className={"cards-container yangicard"}>
+          <div className={'cards-container yangicard'}>
             {data.map((item) => (
               <Card key={item} item={item + currentPage} editable />
             ))}
