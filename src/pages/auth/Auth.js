@@ -2,100 +2,105 @@ import React, { useEffect, useState } from 'react';
 import './auth.css';
 import regleft from '../../assets/images/regleft.png';
 import axios from 'axios';
-// otp
-// import OtpInput from 'react-otp-input';
-
-// true modal
-// import trudemodal from '../../assets/images/tru.png';
-// import falsemodal from '../../assets/images/false.png';
 
 export default function Auth() {
   const [islogin, setIslogin] = useState(false);
-  // const [otp, setOtp] = useState('');
-  // const [sms, setSms] = useState(true);
-  // const [truemodal, setTruemodal] = useState(true);
-
-  // register api
+  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   useEffect(() => {
-    axios;
+    const registerUser = async () => {
+      const url = 'https://api.frossh.uz/api/auth/register';
+      const headers = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      };
+      const body = {
+        last_name: 'Doe',
+        first_name: 'John',
+        birth_date: '1999-12-31',
+        phone_number: '998' + phoneNumber 
+      };
+
+      try {
+        const response = await axios.post(url, body, { headers });
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error registering user:', error);
+      }
+    };
+
+    registerUser();
   }, []);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const isValidPhoneNumber = (phoneNumber) => {
+      const phoneRegex = /^[+]?[0-9]{7,15}$/;
+      return phoneRegex.test(phoneNumber);
+    };
+
+    if (!isValidPhoneNumber(phoneNumber)) {
+      console.error('Invalid phone number format');
+      return;
+    }
+
+    const url = 'https://api.frossh.uz/api/auth/register';
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    };
+    const body = {
+      last_name: lastName,
+      first_name: firstName,
+      birth_date: '1999-12-31',
+      phone_number: '998' + phoneNumber 
+    };
+
+    try {
+      const response = await axios.post(url, body, { headers });
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error registering user:', error);
+    }
+  };
 
   return (
     <div className="register">
       <div className="register-card">
         <div className="reg-card-left">
-          <p> {islogin ? 'xisobga kirish' : 'Ro’yxatdan o’tish'}</p>
+          <p>{islogin ? 'Hisobga kirish' : 'Ro’yxatdan o’tish'}</p>
           <img src={regleft} alt="" />
         </div>
         <div className="reg-card-register">
-          <form action="">
+          <form onSubmit={handleSubmit}>
             <p>Malumotlaringizni kiriting</p>
             {islogin ? null : (
               <>
-                <input type="text" name="" id="" placeholder="Ismingiz" />
-                <input type="text" name="" id="" placeholder="Familiyangiz" />
+                <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Ismingiz" required />
+                <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Familiyangiz" required />
               </>
             )}
-            <input type="text" name="" id="" placeholder="+998" />
+            <input type="date" />
+            <input
+              type="number"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="Telefon raqami"
+              required
+            />
             <span>
               Hisobingiz bormi?{' '}
               <button type="button" onClick={() => setIslogin(true)}>
                 Hisobga kirish
               </button>
             </span>
-
-            <button type="button" onClick={() => setSms(true)}>
-              Sms kod yuborish
-            </button>
+            <button type="submit">{islogin ? 'Hisobga kirish' : 'Ro’yxatdan o’tish'}</button>
           </form>
         </div>
       </div>
-      {/* {sms && (
-        <div className="modal">
-          <div className="modal-card">
-            <p>Tasdiqlash kodini kriting!</p>
-            <OtpInput
-              inputStyle={{
-                width: '77px',
-                height: '77px',
-                flexShrink: 0,
-                margin: 18,
-                borderRadius: 18,
-                fontSize: 32
-              }}
-              value={otp}
-              onChange={setOtp}
-              numInputs={4}
-              renderInput={(props) => <input {...props} />}
-            />
-            <span>00:59</span>
-            <span>
-              Kod kelmadimi? <button>Qayta yuborish</button>
-            </span>
-
-            <button onClick={() => setTruemodal(true)}>Yuborish</button>
-          </div>
-        </div>
-      )} */}
-
-      {/* <div className="modal-true">
-        <div className="truecart">
-          {truemodal ? (
-            <>
-              <img src={trudemodal} alt="" />
-              <p>Siz muvaffaqiyatli ro’yxatdan o’tdingiz!</p>
-              <button>Bosh menyu </button>
-            </>
-          ) : (
-            <>
-              <img src={falsemodal} alt="" />
-              <p>Hatolik yuz berdi! Keynroq urinib ko’ring</p>
-              <button style={truemodal ? { backgroundColor: '#2ECC71' } : { backgroundColor: '#E74C3C' }}>Bosh menyu </button>
-            </>
-          )}
-        </div>
-      </div> */}
     </div>
   );
 }
