@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './auth.css';
 import regleft from '../../assets/images/regleft.png';
 import axios from 'axios';
@@ -8,31 +8,6 @@ export default function Auth() {
   const [lastName, setLastName] = useState('');
   const [firstName, setFirstName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-
-  useEffect(() => {
-    const registerUser = async () => {
-      const url = 'https://api.frossh.uz/api/auth/register';
-      const headers = {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      };
-      const body = {
-        last_name: 'Doe',
-        first_name: 'John',
-        birth_date: '1999-12-31',
-        phone_number: '998' + phoneNumber 
-      };
-
-      try {
-        const response = await axios.post(url, body, { headers });
-        console.log(response.data);
-      } catch (error) {
-        console.error('Error registering user:', error);
-      }
-    };
-
-    registerUser();
-  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -56,7 +31,7 @@ export default function Auth() {
       last_name: lastName,
       first_name: firstName,
       birth_date: '1999-12-31',
-      phone_number: '998' + phoneNumber 
+      phone_number: '998' + phoneNumber
     };
 
     try {
