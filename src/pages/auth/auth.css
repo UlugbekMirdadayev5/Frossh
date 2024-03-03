@@ -1,3 +1,6 @@
+*{
+  box-sizing: border-box;
+}
 .register {
   background-color: rgb(255, 255, 255);
   display: flex;
@@ -20,7 +23,10 @@
   align-items: center;
   justify-content: space-between;
 }
-
+.ph{
+  display: flex;
+  flex-direction: column;
+}
 .reg-card-left {
   display: flex;
   flex-direction: column;
@@ -211,3 +217,117 @@ font-style: normal;
 font-weight: 400;
 line-height: normal;
 }
+
+@media (max-width: 768px) {
+  .register {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .register-card {
+    width: 85%;
+    height: 70%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+   margin-top: -40%;
+  }
+  .reg-card-left>img{
+
+width: 50%;
+
+  }
+  .reg-card-left>p{
+
+    width: 40%;
+    font-size: 15px;
+    
+      }
+  
+.reg-card-left{
+  
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding-top: 55%;
+  
+
+   }
+
+
+
+
+
+
+
+
+
+
+
+  .reg-card-register {
+    width: 100%;
+  }
+  
+  .ph{
+
+    display: flex;
+  
+align-items: center;
+    width: 100%;
+  }
+
+  
+  .ph>input{
+    height: 70% !important;
+    width: 80% !important;
+  }
+
+
+.refresh>input{
+  width: 90%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .modal-card {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .truecart {
+    width: 90%;
+    padding: 20px;
+  }
+}
+
