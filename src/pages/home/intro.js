@@ -1,5 +1,6 @@
 import { ReactComponent as Search } from 'assets/svgs/search.svg';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const Intro = () => {
@@ -10,10 +11,12 @@ const Intro = () => {
     reset();
   };
 
+  const navigate = useNavigate()
+
   const searchBar = (
     <div className="search-bar">
       <input type="text" placeholder="Qidirish" {...register('search-bar-frosh', { required: true })} />
-      <button type="submit">
+      <button type="submit" onClick={() => navigate('/Filterpage')}>
         <Search />
       </button>
     </div>

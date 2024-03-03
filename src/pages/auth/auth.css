@@ -8,7 +8,7 @@
   justify-content: center;
   width: 100%;
   height: 100vh;
-  background: linear-gradient(90deg, white 50%, #8ae79d 50%);
+  background: linear-gradient(90deg, white 50%, #8ACBE7 50%);
 }
 
 .register-card {
@@ -218,6 +218,10 @@ font-weight: 400;
 line-height: normal;
 }
 
+#resend{
+  color: #3498DB;
+}
+
 @media (max-width: 768px) {
   .register {
     flex-direction: column;
@@ -257,21 +261,9 @@ width: 50%;
   
 
    }
-
-
-
-
-
-
-
-
-
-
-
   .reg-card-register {
     width: 100%;
   }
-  
   .ph{
 
     display: flex;
@@ -279,47 +271,15 @@ width: 50%;
 align-items: center;
     width: 100%;
   }
-
   
   .ph>input{
     height: 70% !important;
     width: 80% !important;
   }
 
-
 .refresh>input{
   width: 90%;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   .modal-card {
     width: 90%;
     padding: 20px;

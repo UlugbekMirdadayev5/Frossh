@@ -22,6 +22,9 @@ const Header = () => {
           <Link id="a" to={'/announcement/create'}>
             E’lon joylash +
           </Link>
+          <Link id="a" to={'/auth'}>
+            Ro’yxatdan o’tish
+          </Link>
         </div>
       </header>
     </div>
