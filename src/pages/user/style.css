@@ -196,6 +196,26 @@ form > label > input,
   width: 30%;
 }
 
+.noProfileInfo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 7%;
+}
+
+.noProfileInfo p {
+  font-size: 36.65px;
+  color: #5d6661;
+}
+
+.noProfileInfo a {
+  color: dodgerblue;
+  font-size: 30px;
+}
+
 .cards-container {
   display: flex;
   gap: 70px;
