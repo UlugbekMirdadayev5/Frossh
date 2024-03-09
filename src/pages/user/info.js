@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import noProfileInfoImg from './warningUser.png';
+import { Link } from 'react-router-dom';
 
 export default function UserDashboard() {
   const [regions, setRegions] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [quarters, setQuarters] = useState([]);
 
-  let token = localStorage.getItem('token') || '39|yDwiROyTH3mWYbsfSYwCsrxvd7t71pXqCXjBUVQU74981666';
-  let profileInfo = JSON.parse(localStorage.profileInfo) || {};
+  // let token = localStorage.getItem('token') || '39|yDwiROyTH3mWYbsfSYwCsrxvd7t71pXqCXjBUVQU74981666';
+  let token = localStorage.getItem('token');
+  let profileInfo = JSON.parse(localStorage.profileInfo || '{}') || {};
+
   const headers = {
     Authorization: `Bearer ${token}`,
     Accept: 'application/json',
@@ -99,87 +103,96 @@ export default function UserDashboard() {
     { id: 12, name: 'Dekabr' }
   ];
 
-  let birthDate = profileInfo.birth_date.split('-');
-  console.log(birthDate);
+  let birthDate = profileInfo?.birth_date?.split('-');
 
   return (
     <div className="person">
-      <div className="p-left">
-        <div className="p-left-top">
-          <div className="user-img" style={{ fontSize: '3vw' }}>
-            {profileInfo.first_name[0] + ' ' + profileInfo.last_name[0]}
+      {profileInfo.first_name ? (
+        <div>
+          <div className="p-left">
+            <div className="p-left-top">
+              <div className="user-img" style={{ fontSize: '3vw' }}>
+                {profileInfo?.first_name + ' ' + profileInfo?.last_name}
+              </div>
+              <div className="p-text-info">
+                <p>{profileInfo?.first_name + '.' + profileInfo?.last_name}</p>
+                <span>Sizning hisob raqamingiz: 123456</span>
+                <b>+{profileInfo?.phone_number}</b>
+              </div>
+            </div>
+            <form onSubmit={handleUpdateUserInfo}>
+              <label htmlFor="">
+                <p>Ism:</p>
+                <input type="text" name="first_name" defaultValue={profileInfo?.first_name} placeholder="Name" />
+              </label>
+              <label htmlFor="">
+                <p>Familiya:</p>
+                <input type="text" name="last_name" defaultValue={profileInfo?.last_name} placeholder="Surname" />
+              </label>
+
+              <label htmlFor="">
+                <p>Tug’ilgan yil:</p>
+                <div>
+                  <select name="month">
+                    <option defaultValue={monthNames[birthDate[1] - 1].name}>{monthNames[birthDate[1] - 1].name}</option>
+                    {monthNames.map((item) => (
+                      <option value={item.id} key={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                  <input type="number" defaultValue={birthDate[0]} maxLength={2} name="day" placeholder="day" />
+                  <input type="number" defaultValue={birthDate[2]} name="year" placeholder="year" />
+                </div>
+              </label>
+
+              <label htmlFor="">
+                <p>Viloyat:</p>
+                <select name="region_id" onChange={(e) => getDistrict(e.target.value)}>
+                  <option defaultValue={profileInfo?.region.name_uz}>{profileInfo?.region.name_uz}</option>
+                  {regions.map((region, index) => (
+                    <option value={region.id} key={index}>
+                      {region.name_uz}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label htmlFor="">
+                <p>Shahar:</p>
+                <select name="district_id" onChange={(e) => getQuarters(e.target.value)}>
+                  <option defaultValue={profileInfo?.district.name_uz}>{profileInfo?.district.name_uz}</option>
+                  {districts.map((region, index) => (
+                    <option value={region.id} key={index}>
+                      {region.name_uz}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label htmlFor="">
+                <p>MFY:</p>
+                <select name="quarter_id">
+                  <option defaultValue={profileInfo?.quarter.name_uz}>{profileInfo?.quarter.name_uz}</option>
+                  {quarters.map((region, index) => (
+                    <option value={region.id} key={index}>
+                      {region.name_uz}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button>Saqlash </button>
+            </form>
           </div>
-          <div className="p-text-info">
-            <p>{profileInfo.first_name + '.' + profileInfo.last_name[0]}</p>
-            <span>Sizning hisob raqamingiz: 123456</span>
-            <b>+{profileInfo.phone_number}</b>
+          <div className="p-right">
+            <span>FROSH.UZ saytini tanlaganingizdan mamnunmiz. </span>
           </div>
         </div>
-        <form onSubmit={handleUpdateUserInfo}>
-          <label htmlFor="">
-            <p>Ism:</p>
-            <input type="text" name="first_name" defaultValue={profileInfo.first_name} placeholder="Name" />
-          </label>
-          <label htmlFor="">
-            <p>Familiya:</p>
-            <input type="text" name="last_name" defaultValue={profileInfo.last_name} placeholder="Surname" />
-          </label>
-
-          <label htmlFor="">
-            <p>Tug’ilgan yil:</p>
-            <div>
-              <select name="month">
-                <option defaultValue={monthNames[birthDate[1] - 1].name}>{monthNames[birthDate[1] - 1].name}</option>
-                {monthNames.map((item) => (
-                  <option value={item.id} key={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-              <input type="number" defaultValue={birthDate[0]} maxLength={2} name="day" placeholder="day" />
-              <input type="number" defaultValue={birthDate[2]} name="year" placeholder="year" />
-            </div>
-          </label>
-
-          <label htmlFor="">
-            <p>Viloyat:</p>
-            <select name="region_id" onChange={(e) => getDistrict(e.target.value)}>
-              <option defaultValue={profileInfo.region.name_uz}>{profileInfo.region.name_uz}</option>
-              {regions.map((region, index) => (
-                <option value={region.id} key={index}>
-                  {region.name_uz}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label htmlFor="">
-            <p>Shahar:</p>
-            <select name="district_id" onChange={(e) => getQuarters(e.target.value)}>
-              <option defaultValue={profileInfo.district.name_uz}>{profileInfo.district.name_uz}</option>
-              {districts.map((region, index) => (
-                <option value={region.id} key={index}>
-                  {region.name_uz}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label htmlFor="">
-            <p>MFY:</p>
-            <select name="quarter_id">
-              <option defaultValue={profileInfo.quarter.name_uz}>{profileInfo.quarter.name_uz}</option>
-              {quarters.map((region, index) => (
-                <option value={region.id} key={index}>
-                  {region.name_uz}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button>Saqlash </button>
-        </form>
-      </div>
-      <div className="p-right">
-        <span>FROSH.UZ saytini tanlaganingizdan mamnunmiz. </span>
-      </div>
+      ) : (
+        <div className="noProfileInfo">
+          <img src={noProfileInfoImg} alt="" />
+          <p>Tizimga kirshingiz kerak!</p>
+          <Link to="/auth">Tizimga kirish</Link>
+        </div>
+      )}
     </div>
   );
 }
