@@ -1,15 +1,15 @@
 /* eslint-disable react/prop-types */
 import React, { useRef, useState, memo } from 'react';
+import { Controller } from 'react-hook-form';
 import { ArrowSelect, LoadingIcon } from 'assets/svgs';
 import { useClickOutside } from 'utils';
-import { Controller } from 'react-hook-form';
 import './style.css';
 
-const Select = ({ label, name, onSelect, options, defaultOpened, control, error, required, loading }) => {
+const Select = ({ label, name, onSelect, options, defaultOpened, control, error, required, loading, disabled }) => {
   const ref = useRef();
 
   const handleChange = (value, onChange, setValue, setOpen, option) => {
-    setValue(value);
+    setValue(option.label);
     setOpen(false);
     onChange && onChange({ target: { value } });
     onSelect && onSelect(value, option);
@@ -22,7 +22,12 @@ const Select = ({ label, name, onSelect, options, defaultOpened, control, error,
       setOpen(false);
     });
     return (
-      <div ref={ref} className={`custome-select ${open ? 'opened' : ''} ${error ? 'error' : ''}`}>
+      <div
+        ref={ref}
+        disabled={disabled}
+        title={disabled ? 'Disabled!' : 'Choose a select'}
+        className={`custome-select${open ? ' opened' : ''}${error ? ' error' : ''}`}
+      >
         {valueSelect ? label || '' : ''}
         <button className="menu-header" onClick={() => setOpen(!open)} type="button">
           <p>{valueSelect || label}</p>

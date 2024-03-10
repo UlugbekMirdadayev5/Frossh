@@ -68,10 +68,6 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type='number'] {
-  -moz-appearance: textfield;
-}
-
 a {
   color: inherit;
   font-size: inherit;
@@ -116,6 +112,11 @@ a {
   border-color: var(--primary-2);
   background: var(--light-2);
   translate: 0px -3px;
+}
+
+.paginations button:disabled {
+  opacity: 0.5;
+  cursor: no-drop;
 }
 
 /* loader animation */

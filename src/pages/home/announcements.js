@@ -1,29 +1,44 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Card } from 'components/card';
-import { createPagination } from 'utils/createPagination';
+// import { createPagination } from 'utils/createPagination';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Announcements = () => {
-  const data = Array.from({ length: 800 }, (_, i) => i + 1);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [data, setData] = useState([]);
+  // const [currentPage, setCurrentPage] = useState(1);
+  const getTopAnnouncements = useCallback(() => {
+    axios
+      .get('https://api.frossh.uz/api/announcement/get-by-filter')
+      .then(({ data }) => {
+        setData(data?.result?.top);
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || 'Xatolik!');
+      });
+  }, []);
+  useEffect(() => {
+    getTopAnnouncements();
+  }, [getTopAnnouncements]);
   return (
     <div className="container">
       <h2 className="title">{'Top E’lonlar'}</h2>
       <div className={`cards-container ${data?.length / 4 ? 'justify-between' : ''}`}>
-        {[...data].splice(currentPage, 8)?.map((_, key) => (
-          <Card key={_ + key} item={key + _} />
+        {data.map((item) => (
+          <Card key={item?.id} item={item} />
         ))}
       </div>
-      <div className="paginations">
-        {createPagination(currentPage, 800 / 8).map((item, key) => (
+      {/* <div className="paginations">
+        {?.links?.map((item) => (
           <button
-            key={item + key}
+            dangerouslySetInnerHTML={{ __html: item?.label?.replace(/\b(Previous|Next)\b/g, '')?.trim() }}
+            key={item?.label}
             onClick={() => setCurrentPage(item === '...' ? currentPage : item)}
-            className={currentPage === item ? 'active' : undefined}
-          >
-            {item}
-          </button>
+            className={item?.active ? 'active' : undefined}
+            disabled={!item?.url}
+          />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

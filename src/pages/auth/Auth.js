@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -8,29 +8,155 @@ import regleft from '../../assets/images/regleft.png';
 import trudemodal from '../../assets/images/tru.png';
 import falsemodal from '../../assets/images/false.png';
 import './auth.css';
-
-// Сохранить токен в cookie
+import { toast } from 'react-toastify';
+import { formatTime } from 'utils';
 
 export default function Auth() {
-  const [islogin, setIslogin] = useState(false);
   const [num, setNum] = useState();
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
+    setError,
+    clearErrors,
     formState: { errors }
   } = useForm();
-  const [sms, setSms] = useState(false);
   const [otp, setOtp] = useState('');
-  const [code, setCode] = useState(true);
-  const [truemodal1, setTruemodal] = useState(false);
-  const [Send, setSend] = useState(false);
-  const [refresh, setRefresh] = useState(false);
-  const [unreg, setUnreg] = useState(false);
-  //regist
+  const [openSelect, setOpenSelect] = useState('');
+  const [step, setStep] = useState('register'); // register || login || modal-otp || modal-[success||reject]
+  const [seconds, setSeconds] = useState(0);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSeconds((prevSeconds) => (prevSeconds - 1 <= 0 ? 0 : prevSeconds - 1));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (seconds === 0) {
+      clearInterval();
+      // Do something when countdown reaches zero
+    }
+  }, [seconds]);
+
+  //Code/verification
+  const onVerificationCode = (data) => {
+    if (data) {
+      axios
+        .post(
+          'https://api.frossh.uz/api/auth/verify',
+          {
+            code: data,
+            phone_number: num
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+            }
+          }
+        )
+        .then((response) => {
+          setStep('modal-success');
+          Cookies.set('token', response?.data?.result?.token);
+        })
+        .catch((error) => {
+          setStep('modal-reject');
+          console.log(error);
+          toast.error(error?.response?.data?.message || 'Xatolik bor!');
+        });
+    }
+  };
+  //Login
+  const onLogin = (data) => {
+    axios
+      .post(
+        'https://api.frossh.uz/api/auth/login',
+        {
+          phone_number: data.phone
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          }
+        }
+      )
+      .then(() => {
+        setNum(data.phone);
+        setStep('modal-otp');
+        setSeconds(60)
+        reset();
+      })
+      .catch((error) => {
+        console.log(error?.response?.data);
+        toast.error(error?.response?.data?.message || 'Xatolik bor!');
+      });
+  };
+  const onResendMessage = (data) => {
+    setSeconds(60);
+    axios
+      .post(
+        'https://api.frossh.uz/api/auth/resend',
+        {
+          code: data,
+          phone_number: num
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          }
+        }
+      )
+      .then((response) => {
+        toast.success(response?.data?.result || 'Yuborildi');
+      })
+      .catch((error) => {
+        console.log(error?.response?.data);
+        toast.error(error?.response?.data?.message || 'Xatolik bor!');
+      });
+  };
+  // const onUpdate = (data) => {
+  //   const token = Cookies.get('token');
+  //   axios
+  //     .put(
+  //       'https://api.frossh.uz/api/user/update',
+  //       {
+  //         last_name: data.lastName,
+  //         first_name: data.firstName
+  //       },
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Accept: 'application/json',
+  //           Authorization: `Bearer ${token}`
+  //         }
+  //       }
+  //     )
+  //     .then((response) => {
+  //       console.log(response?.data);
+  //     })
+
+  //     .catch((error) => {
+  //       console.log(error?.response?.data);
+  //     });
+  // };
   const onRegister = (data) => {
+    if (data.year && data.month && data.day) {
+      data.date = `${data.year}-${data.month}-${data.day}`;
+    }
+    delete data.year;
+    delete data.month;
+    delete data.day;
+    if (data) {
+      return console.log(data);
+    }
     axios
       .post(
         'https://api.frossh.uz/api/auth/register',
@@ -48,289 +174,302 @@ export default function Auth() {
         }
       )
       .then(({ data }) => {
-        console.log(data);
-        setSms(true);
         setNum(data.phone);
         reset();
       })
       .catch((error) => {
-        console.log(error.response.data);
-        setIslogin(true);
-        setUnreg(true);
+        console.log(error?.response?.data);
+        toast.error(error?.response?.data?.message || 'Xatolik bor!');
       });
   };
+  const request = { login: onLogin, register: onRegister, 'modal-otp': onVerificationCode };
 
-  //Code/verification
-  const onVerificationCode = async (data) => {
-    await axios
-      .post(
-        'https://api.frossh.uz/api/auth/verify',
-        {
-          code: data,
-          phone_number: num
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          }
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
+  const onSubmit = (values) => request[step](values);
 
-        if (response.data.result != {}) {
-          console.log('omad');
-          setCode(true);
-          setSend(true);
-          setTruemodal(true);
-          Cookies.set('token', response.data.result.token);
-        } else {
-          setTruemodal(true);
-        }
-      })
+  // const handleLogout = () => {
+  //   const token = Cookies.get('token');
+  //   console.log(token);
+  //   axios
+  //     .post(
+  //       'https://api.frossh.uz/api/auth/logout',
+  //       {},
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Accept: 'application/json',
+  //           Authorization: `Bearer ${token}`
+  //         }
+  //       }
+  //     )
+  //     .then((response) => {
+  //       console.log(response?.data);
+  //     })
 
-      .catch((error) => {
-        if (
-          error.response.data.result == 'Code is not correct.' ||
-          error.response.data.result == 'The code field is required.' ||
-          error.response.data.message == 'The code must be at least 4 characters.'
-        ) {
-          console.log('omad');
-          setCode(false);
-          setTruemodal(false);
-          setSend(true);
-        } else {
-          setCode(true);
-          setTruemodal(true);
-          setSend(true);
-        }
-      });
-  };
+  //     .catch((error) => {
+  //       console.log(error?.response?.data);
+  //     });
+  //   Cookies.remove('token');
+  //   reset();
+  // };
 
-  // useEffect
-  // api/auth/resend
-  //Login
-  const onLogin = async (data) => {
-    console.log(data.phone);
-
-    await axios
-      .post(
-        'https://api.frossh.uz/api/auth/login',
-        {
-          phone_number: data.phone
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          }
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
-        if (response.data.result == 'Successfully sent code.') {
-          console.log('omad');
-          setNum(data.phone);
-          setSms(true);
-          console.log(sms);
-        }
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-        console.log('hato');
-      });
-    reset();
-  };
-
-  const onResendMessage = async (data) => {
-    console.log(data);
-
-    await axios
-      .post(
-        'https://api.frossh.uz/api/auth/resend',
-        {
-          code: data,
-          phone_number: num
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          }
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
-      })
-
-      .catch((error) => {
-        console.log(error.response.data);
-      });
-  };
-
-  const onUpdate = async (data) => {
-    const token = Cookies.get('token');
-    await axios
-      .put(
-        'https://api.frossh.uz/api/user/update',
-        {
-          last_name: data.lastName,
-          first_name: data.firstName
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
-      })
-
-      .catch((error) => {
-        console.log(error.response.data);
-      });
-  };
-
-  const handleLogout = async () => {
-    const token = Cookies.get('token');
-    console.log(token);
-    await axios
-      .post(
-        'https://api.frossh.uz/api/auth/logout',
-        {},
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
-      })
-
-      .catch((error) => {
-        console.log(error.response.data);
-      });
-    Cookies.remove('token');
-    setUnreg(true);
-
-    reset();
-  };
+  const months = [
+    {
+      label: 'Yanvar',
+      value: '01',
+      days: 31
+    },
+    {
+      label: 'Fevral',
+      value: '02',
+      days: 28
+    },
+    {
+      label: 'Mart',
+      value: '03',
+      days: 31
+    },
+    {
+      label: 'Aprel',
+      value: '04',
+      days: 30
+    },
+    {
+      label: 'May',
+      value: '05',
+      days: 31
+    },
+    {
+      label: 'Iyun',
+      value: '06',
+      days: 30
+    },
+    {
+      label: 'Iyul',
+      value: '07',
+      days: 31
+    },
+    {
+      label: 'Avgust',
+      value: '08',
+      days: 31
+    },
+    {
+      label: 'Sentabr',
+      value: '09',
+      days: 30
+    },
+    {
+      label: 'Oktabr',
+      value: '10',
+      days: 31
+    },
+    {
+      label: 'Noyabr',
+      value: '11',
+      days: 30
+    },
+    {
+      label: 'Dekabr',
+      value: '12',
+      days: 31
+    }
+  ];
 
   return (
     <div className="register">
       <div className="register-card">
         <div className="reg-card-left">
-          <p> {islogin ? 'xisobga kirish' : 'Ro’yxatdan o’tish'}</p>
+          <p>{step === 'login' ? 'Hisobga kirish' : 'Ro’yxatdan o’tish'}</p>
           <img src={regleft} alt="images-left" />
         </div>
-        <div className="reg-card-register">
-          <form onSubmit={handleSubmit(refresh ? onUpdate : unreg ? onLogin : onRegister)}>
-            <p>Malumotlaringizni kiriting</p>
-            {unreg ? null : (
-              <>
-                <input {...register('firstName', { required: true })} type="text" placeholder="Ismingiz" />
-                {errors.firstName && <span></span>}
-                <input {...register('lastName', { required: true })} type="text" placeholder="Familiyangiz" />
-                {/* {errors.lastName && <span>This field is required</span>} */}
+        <form onSubmit={handleSubmit(onSubmit)} className="reg-card-register">
+          <p>{"Ma'lumotlaringizni kiriting"}</p>
 
-                <div>
-                  <input {...register('date', { required: true })} type="date" placeholder="date" />
-
-                  {/* {errors.lastName && <span>This field is required</span>} */}
+          {step !== 'login' ? (
+            <>
+              <input
+                type="text"
+                placeholder="Ismingiz"
+                {...register('firstName', { required: true })}
+                className={errors.firstName ? 'error' : ''}
+              />
+              <input
+                type="text"
+                placeholder="Familiyangiz"
+                {...register('lastName', { required: true })}
+                className={errors.lastName ? 'error' : ''}
+              />
+            </>
+          ) : null}
+          <input
+            {...register('phone', { required: true, pattern: { value: /^[0-9]{12}$/ } })}
+            type="text"
+            placeholder="+998"
+            className={errors.phone ? 'error' : ''}
+          />
+          {step !== 'login' ? (
+            <>
+              {' '}
+              <div className="input-row">
+                <div className={openSelect === 'month' ? 'opened' : ''} aria-hidden onClick={() => setOpenSelect('month')}>
+                  <input
+                    {...register('month', { required: true })}
+                    readOnly
+                    type="number"
+                    placeholder="mm"
+                    className={errors.month ? 'error' : ''}
+                  />
+                  <div className="options">
+                    {months.map((item) => (
+                      <div
+                        key={item.value}
+                        className="option"
+                        aria-hidden
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setValue('month', item.value);
+                          clearErrors('month');
+                          setOpenSelect(() => (!watch('day') ? 'day' : ''));
+                        }}
+                      >
+                        {item.label}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </>
-            )}
-            {islogin ? (
-              <span>Siz Muofaqyatli otingiz</span>
-            ) : (
-              <div className="ph">
-                <input {...register('phone', { required: true })} type="text" placeholder="+998" />
-
-                {/* {errors.phone && <span>This field is required</span>} */}
-                <span>
-                  Hisobingiz bormi?{' '}
-                  <button type="button" onClick={() => setIslogin(true)}>
-                    Hisobga kirish
-                  </button>
+                <div
+                  className={openSelect === 'day' ? 'opened' : ''}
+                  aria-hidden
+                  onClick={() =>
+                    setOpenSelect(() => {
+                      !watch('month') && setError('');
+                      return watch('month') ? 'day' : 'month';
+                    })
+                  }
+                >
+                  <input
+                    {...register('day', { required: true })}
+                    readOnly
+                    type="number"
+                    placeholder="dd"
+                    className={errors.day ? 'error' : ''}
+                  />
+                  <div className="options">
+                    {watch('month')
+                      ? Array.from({ length: months.find((item) => item?.value === watch('month'))?.days }, (_, i) => i + 1).map((item) => (
+                          <div
+                            className="option"
+                            key={item}
+                            aria-hidden
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setValue('day', item);
+                              clearErrors('day');
+                              setOpenSelect(() => (!watch('year') ? 'year' : ''));
+                            }}
+                          >
+                            {item}
+                          </div>
+                        ))
+                      : null}
+                  </div>
+                </div>
+                <div className={openSelect === 'year' ? 'opened' : ''} aria-hidden onClick={() => setOpenSelect('year')}>
+                  <input
+                    {...register('year', { required: true })}
+                    type="number"
+                    readOnly
+                    placeholder="yyyy"
+                    className={errors.year ? 'error' : ''}
+                  />
+                  <div className="options">
+                    {Array.from({ length: 60 }, (_, i) => new Date().getFullYear() - i).map((item) => (
+                      <div
+                        className="option"
+                        key={item}
+                        aria-hidden
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setValue('year', item);
+                          clearErrors('year');
+                          setOpenSelect('');
+                        }}
+                      >
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <label>
+                <input type="checkbox" className="oferta" required />
+                <p>Ofertani tasdiqlash!</p>
+              </label>
+              <div className="row-link-bottom">
+                Hisobingiz bormi?{' '}
+                <span aria-hidden onClick={() => setStep('login')} className="link">
+                  Hisobga kirish
                 </span>
               </div>
-            )}
-            {unreg ? '' : <button type="submit">Sms kod yuborish</button>}
+            </>
+          ) : (
+            <div className="row-link-bottom">
+              Hali hisob ochmadingizmi?
+              <span aria-hidden onClick={() => setStep('register')} className="link">
+                Hisobga ochish
+              </span>
+            </div>
+          )}
 
-            {refresh ? (
-              <div className="refresh">
-                <input {...register('firstName', { required: true })} type="text" placeholder="Ismingiz" />
-                {errors.firstName && <span></span>}
-                <input {...register('lastName', { required: true })} type="text" placeholder="Familiyangiz" />
-                {/* {errors.lastName && <span>This field is required</span>} */}
-              </div>
-            ) : null}
-
-            {refresh ? <button onClick={() => setRefresh(false)}>Back</button> : null}
-            {islogin ? <button onClick={() => handleLogout()}>Log out</button> : null}
-            {/* {islogin ? <button onClick={() => setRefresh(true)}>Refresh</button> : null} */}
-          </form>
-        </div>
+          <button type="submit">Sms kod yuborish</button>
+        </form>
       </div>
-      {sms && (
+
+      {step.includes('modal') ? (
         <div className="modal">
-          <div className="modal-card">
-            {/* <button onClick={() => setSms(false)}>X</button> */}
-            <p>Tasdiqlash kodini kriting!</p>
-            <OtpInput
-              inputStyle={{
-                width: '77px',
-                height: '77px',
-                flexShrink: 0,
-                margin: 18,
-                borderRadius: 18,
-                fontSize: 32,
-                border: '1px solid black'
-              }}
-              value={otp}
-              onChange={setOtp}
-              numInputs={4}
-              renderInput={(props) => <input {...props} />}
-            />
-            <span>00:59</span>
-            {code ? null : <span>Code is not correct.</span>}
-            <span>
-              Kod kelmadimi? <button onClick={() => onResendMessage(otp)}>Qayta yuborish</button>
-            </span>
-
-            {/* <button onClick={() => setTruemodal(true)}>Yuborish</button> */}
-
-            <button onClick={() => onVerificationCode(otp)}>Yuborish</button>
-          </div>
-        </div>
-      )}
-
-      {Send ? (
-        <div className="modal-true">
-          <div className="truecart">
-            {truemodal1 ? (
-              <>
-                <img src={trudemodal} alt="" />
-                <p>Siz muvaffaqiyatli ro’yxatdan o’tdingiz!</p>
-                <button onClick={() => navigate('/')}>Bosh menyu </button>
-              </>
-            ) : (
-              <>
-                <img src={falsemodal} alt="" />
-                <p>Hatolik yuz berdi! Keynroq urinib ko’ring</p>
-                <button style={truemodal1 ? { backgroundColor: '#2ECC71' } : { backgroundColor: '#E74C3C' }} onClick={() => navigate('/')}>
-                  Bosh menyu{' '}
-                </button>
-              </>
-            )}
-          </div>
+          {step === 'modal-otp' ? (
+            <div className="modal-card">
+              <p>Tasdiqlash kodini kriting!</p>
+              <OtpInput
+                inputStyle={{
+                  width: '77px',
+                  height: '77px',
+                  flexShrink: 0,
+                  margin: 18,
+                  borderRadius: 18,
+                  fontSize: 32,
+                  border: '1px solid black'
+                }}
+                value={otp}
+                onChange={setOtp}
+                numInputs={4}
+                renderInput={(props) => <input {...props} />}
+              />
+              <span>{formatTime(seconds)}</span>
+              {seconds ? null : (
+                <span>
+                  Kod kelmadimi? <button onClick={() => onResendMessage(otp)}>Qayta yuborish</button>
+                </span>
+              )}
+              <button onClick={() => onVerificationCode(otp)}>Yuborish</button>
+            </div>
+          ) : (
+            <div className="truecart">
+              {step === 'modal-success' ? (
+                <>
+                  <img src={trudemodal} alt="cs" />
+                  <p>Siz muvaffaqiyatli ro’yxatdan o’tdingiz!</p>
+                  <button onClick={() => navigate('/')}>Bosh menyu </button>
+                </>
+              ) : step === 'modal-reject' ? (
+                <>
+                  <img src={falsemodal} alt="cs" />
+                  <p>Hatolik yuz berdi! Keynroq urinib ko’ring</p>
+                  <button onClick={() => setStep('register')}>Bosh menyu</button>
+                </>
+              ) : null}
+            </div>
+          )}
         </div>
       ) : null}
     </div>

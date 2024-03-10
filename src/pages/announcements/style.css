@@ -19,7 +19,9 @@
   .row .space {
     max-width: 1053px;
   }
-
+  .align-center {
+    align-items: center;
+  }
   .row .space .top-slider {
     cursor: zoom-in;
     min-height: 500px;
@@ -257,6 +259,8 @@
   width: 67px;
   height: 67px;
   z-index: 2;
+  display: grid;
+  place-content: center;
 }
 .slider-wrapper .next-btn {
   right: -30px;
@@ -280,6 +284,9 @@
   box-shadow: 0px 0px 13.7px rgba(0, 0, 0, 0.5);
   border-radius: 16px;
   padding: 20px 30px;
+}
+.space:has(.file_uploader).empty .inner {
+  box-shadow: 0px 0px 13.7px rgba(255, 0, 0, 0.5);
 }
 .file_uploader {
   padding: 100px 18px 44px 18px;
@@ -398,7 +405,7 @@
   color: #5d6661;
   font-size: 36.65px;
   font-weight: 400;
-  max-width: 500px;
+  max-width: 400px;
   border: 2px solid #fff;
   transition: 100ms ease;
 }

@@ -76,7 +76,7 @@ export default function Filterpage() {
             {/* //ragne slayder */}
             <div className="range-slayder">
               <RangeSlider
-                ariaLabel={['min', 'max']}
+                aria-label={"['min', 'max']"}
                 defaultValue={[10, 30]}
                 sx={{
                   color: 'white',
@@ -98,7 +98,7 @@ export default function Filterpage() {
                 </div>
               </div>
               <RangeSlider
-                ariaLabel={['min', 'max']}
+                aria-label={"['min', 'max']"}
                 defaultValue={[10, 30]}
                 sx={{
                   color: 'white',

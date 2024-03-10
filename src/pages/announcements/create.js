@@ -1,24 +1,30 @@
 /* eslint-disable react/prop-types */
-import { useState, useRef, useCallback } from 'react';
-import { Arrow, Close, ImagePicker, LoadingIcon, Pen, Save } from 'assets/svgs';
-import { toast } from 'react-toastify';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { formatFileSize } from 'utils';
-import Select from 'components/select';
 import { useForm } from 'react-hook-form';
-import Checkbox from 'components/checkbox';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { Arrow, Close, ImagePicker, LoadingIcon, Pen, Save } from '../../assets/svgs';
+import { formatFileSize } from '../../utils';
+import Select from '../../components/select';
+import Checkbox from '../../components/checkbox';
+import MapContainer from '../../components/GoogleMap';
+import { getCoorDinates } from '../../utils/location';
 import './style.css';
-import MapContainer from 'components/GoogleMap';
-import { getCoorDinates } from 'utils/location';
 
-const handleRemoveImage = (image, element, seTimgFiles, setActiveIndex) => {
+const handleRemoveImage = (image, element, seTimgFiles, setActiveIndex, setError) => {
   setActiveIndex((index) => index - 1);
   element?.current?.classList?.add('this-removed');
   setTimeout(() => {
-    seTimgFiles((files) => files.filter((item) => item.id !== image.id));
+    seTimgFiles((files) => {
+      const arr = files.filter((item) => item.id !== image.id);
+      !arr?.length && setError('photo');
+      return arr;
+    });
   }, 500);
 };
-export const ImageRow = ({ image, seTimgFiles, setActiveIndex }) => {
+export const ImageRow = ({ image, seTimgFiles, setActiveIndex, setError }) => {
   const ref = useRef();
   const [scale, setScale] = useState(0);
 
@@ -31,13 +37,13 @@ export const ImageRow = ({ image, seTimgFiles, setActiveIndex }) => {
       }}
       onSlideChange={(swiper) => {
         if (swiper.activeIndex === 1) {
-          handleRemoveImage(image, ref, seTimgFiles, setActiveIndex);
+          handleRemoveImage(image, ref, seTimgFiles, setActiveIndex, setError);
         }
       }}
     >
       <SwiperSlide>
         <button type="button" key={image.id} ref={ref}>
-          <Close className="remover" onClick={() => handleRemoveImage(image, ref, seTimgFiles, setActiveIndex)} />
+          <Close className="remover" onClick={() => handleRemoveImage(image, ref, seTimgFiles, setActiveIndex, setError)} />
           <img src={image.path} alt={`uploaded-img ${image.id}`} />
           <p className="file-size">{formatFileSize(image.size)}</p>
         </button>
@@ -52,10 +58,13 @@ export const ImageRow = ({ image, seTimgFiles, setActiveIndex }) => {
 };
 
 const CreateAnnouncement = () => {
+  const navigation = useNavigate();
   const [imgFiles, seTimgFiles] = useState([]);
+  const [amenities, setAmenities] = useState([]);
   const [keyCounter, setKeyCounter] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState({
     lat: 40.98,
     lng: 71.58
@@ -65,6 +74,7 @@ const CreateAnnouncement = () => {
   const sliderRef = useRef();
 
   const handleFileSelection = (event) => {
+    clearErrors('photo');
     const selectedImages = event.target.files;
     const validFiles = Array.from(selectedImages).filter((file) => file.size <= 10 * 1024 * 1024);
     const invalidFiles = Array.from(selectedImages).filter((file) => file.size > 10 * 1024 * 1024);
@@ -77,7 +87,8 @@ const CreateAnnouncement = () => {
     const arrayImages = Array.from(validFiles).map((path, index) => ({
       id: `unikey-${imgFiles?.length + index + URL.createObjectURL(path)}`,
       path: URL.createObjectURL(path),
-      size: path.size
+      size: path.size,
+      file: path
     }));
 
     if ([...imgFiles, ...arrayImages].length > 10) {
@@ -106,23 +117,33 @@ const CreateAnnouncement = () => {
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors },
     control,
     setValue,
+    watch,
     getValues,
-    setError
+    setError,
+    clearErrors
   } = useForm({
     defaultValues: {
-      holati: '',
-      joy: '',
-      month: '',
-      tur: '',
-      type: '',
-      prepayment: null,
-      year_of_construction: '',
-      number_of_rooms: '',
-      total_place: '',
-      address: ''
+      description: '',
+      price: '',
+      calculation_method: '',
+      place_type: '',
+      repair_type: '',
+      sale_type: 'sale',
+      advance: '0',
+      bargain: '',
+      advance_month: '',
+      room_floor: '',
+      room_count: '',
+      construction_year: '',
+      m2: '',
+      address: '',
+      latitude: '',
+      longitude: '',
+      amenities: []
     }
   });
 
@@ -136,6 +157,8 @@ const CreateAnnouncement = () => {
           setMapArray(data?.results);
           if (data?.results?.length === 1) {
             setValue('address', String(data?.results[0]?.formatted)?.replace('unnamed road,', ''));
+            setValue('latitude', data?.results[0]?.geometry?.lat);
+            setValue('longitude', data?.results[0]?.geometry?.lng);
             setLocation(data?.results[0]?.geometry);
             setMapArray([]);
           }
@@ -143,25 +166,79 @@ const CreateAnnouncement = () => {
       })
       .catch((err) => {
         setIsLoading(false);
-        console.log('====================================');
         console.log(err);
-        console.log('====================================');
       });
   };
 
   const onSubmit = (values) => {
     if (!getValues('address')) return setError('address');
-    values.address = {
-      name: values.address,
-      geometry: location
-    };
-    console.log(values);
+    if (!imgFiles?.length) return setError('photo');
+    setLoading(true);
+    const data = { ...values, photo: imgFiles?.map(({ file }) => file) };
+    const formData = new FormData();
+    Object.keys(data).map((key) => {
+      if (key === 'photo') {
+        return data[key].map((photo, index) => formData.append(`photo[${index}]`, photo));
+      }
+      if (key === 'amenities') {
+        return data[key].map((am, index) => formData.append(`amenities[${index}]`, am));
+      }
+      return formData.append(key, data[key]);
+    });
+    setLoading(true);
+    axios
+      .post('https://api.frossh.uz/api/announcement/create', formData, {
+        headers: {
+          Authorization: 'Bearer 59|912IEqPlHGAthZX6pFeYoAwhVq4bzbXi0EaNtMR9b42777c6',
+          'Content-Type': 'multipart/form-data',
+          Accept: 'application/json'
+        }
+      })
+      .then(({ data }) => {
+        setLoading(false);
+        toast.success(data?.result || 'Success');
+        reset();
+        seTimgFiles([]);
+        setActiveIndex(0);
+        navigation('/');
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err, 'err');
+        toast.error(err?.response?.data?.message || 'Error');
+      });
   };
+  const place_type = watch('place_type');
+
+  const getAminites = useCallback(() => {
+    if (amenities?.length) return;
+    axios
+      .get('https://api.frossh.uz/api/amenity/get')
+      .then(({ data }) => {
+        setAmenities(data?.result);
+      })
+      .catch((err) => {
+        console.log(err, 'err');
+      });
+  }, [amenities?.length]);
+
+  useEffect(() => {
+    return () => {
+      getAminites();
+    };
+  }, [getAminites]);
 
   return (
     <form className="container announcements" onSubmit={handleSubmit(onSubmit)}>
+      {loading && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 55, display: 'grid', placeContent: 'center', backgroundColor: 'rgba(0,0,0,0.3)' }}
+        >
+          <LoadingIcon />
+        </div>
+      )}
       <div className="row">
-        <div className="space">
+        <div className={`space ${errors?.photo ? 'empty' : ''}`}>
           <div className="inner">
             <label
               htmlFor="upload_img"
@@ -192,7 +269,7 @@ const CreateAnnouncement = () => {
                 <Swiper ref={sliderRef} className="uplodaed-images" slidesPerView={'auto'} spaceBetween={26}>
                   {imgFiles.map((image) => (
                     <SwiperSlide className="slide-item-1" key={image.id}>
-                      <ImageRow image={image} seTimgFiles={seTimgFiles} setActiveIndex={setActiveIndex} />
+                      <ImageRow image={image} seTimgFiles={seTimgFiles} setActiveIndex={setActiveIndex} setError={setError} />
                     </SwiperSlide>
                   ))}
                 </Swiper>
@@ -202,10 +279,10 @@ const CreateAnnouncement = () => {
                 </button>
               </div>
             )}
-            <button type="button" disabled={!imgFiles.length} className="image-saver">
+            {/* <button type="button" disabled={!imgFiles.length} className="image-saver">
               <span>Saqlash</span>
               <Save />
-            </button>
+            </button> */}
           </div>
           <div className="progressbar">
             <div className="filled" style={{ '--percent': `${activeIndex * 10}%` }}></div>
@@ -214,49 +291,28 @@ const CreateAnnouncement = () => {
         </div>
         <div className="between right-bar_">
           <Select
-            error={errors['tur']}
-            name={'tur'}
-            label={'Turini tanlang'}
-            options={[
-              {
-                value: 'Sotix',
-                label: 'Sotix'
-              },
-              {
-                value: 'M²',
-                label: 'M²'
-              },
-              {
-                value: 'Quruq yer',
-                label: 'Quruq yer'
-              }
-            ]}
-            control={control}
-            required
-          />
-          <Select
-            error={errors['joy']}
-            name={'joy'}
+            error={errors['place_type']}
+            name={'place_type'}
             label={'Joy turini tanlang'}
             options={[
               {
-                value: 'Kvartira',
+                value: 'apartment',
                 label: 'Kvartira'
               },
               {
-                value: 'Xonadon',
+                value: 'home',
                 label: 'Xonadon'
               },
               {
-                value: 'Quruq yer',
+                value: 'dry land',
                 label: 'Quruq yer'
               },
               {
-                value: 'Biznes uchun joy',
+                value: 'business place',
                 label: 'Biznes uchun joy'
               },
               {
-                value: 'Turar joy majmuasi',
+                value: 'skyscraper',
                 label: 'Turar joy majmuasi'
               }
             ]}
@@ -264,20 +320,20 @@ const CreateAnnouncement = () => {
             required
           />
           <Select
-            error={errors['holati']}
-            name={'holati'}
+            error={errors['repair_type']}
+            name={'repair_type'}
             label={'Ta’mir holati'}
             options={[
               {
-                value: 'Yomon',
+                value: 'bad',
                 label: 'Yomon'
               },
               {
-                value: 'O’rtacha',
+                value: 'good',
                 label: 'O’rtacha'
               },
               {
-                value: 'Yaxshi',
+                value: 'new',
                 label: 'Yaxshi'
               }
             ]}
@@ -285,173 +341,205 @@ const CreateAnnouncement = () => {
             required
           />
           <Select
-            defaultOpened
-            error={errors['type']}
-            name={'type'}
+            error={errors['sale_type']}
+            name={'sale_type'}
             label={'Turini tanlang'}
             options={[
               {
-                value: 'Sotish',
+                value: 'sale',
                 label: 'Sotish'
               },
-              {
-                value: 'Ijaraga berish',
-                label: 'Ijaraga berish'
-              }
-            ]}
+              place_type !== 'skyscraper'
+                ? {
+                    value: 'rent',
+                    label: 'Ijaraga berish'
+                  }
+                : null
+            ].filter(Boolean)}
             control={control}
             required
           />
         </div>
       </div>
-      <h3 className="h3">Narx*</h3>
-      <div className="inputs-row">
-        <label className={`input-label ${errors['total-price'] ? 'error' : ''}`}>
-          <input type="number" placeholder="100.000.000" {...register('total-price', { required: true })} />
-          <span>UZS</span>
-          <Pen />
-        </label>
-        <label className={`input-label ${errors['per-month-price'] ? 'error' : ''}`}>
-          <input type="number" placeholder="100.000.000" {...register('per-month-price', { required: true })} />
-          <span>UZS/M²</span>
-          <Pen />
-        </label>
-        <label className={`input-label ${errors['per-month-price2'] ? 'error' : ''}`}>
-          <input type="number" placeholder="100.000.000" {...register('per-month-price2', { required: true })} />
-          <span>UZS/Sotix</span>
-          <Pen />
-        </label>
-      </div>
-      <div className="inputs-row">
-        <div className="space_left">
-          <h3 className="h3">Oldindan to’lov*</h3>
-          <div className="checkboxes">
-            <Checkbox type="radio" label={'Bor'} value="Bor" required name="prepayment" error={errors['prepayment']} register={register} />
-            <Checkbox
-              type="radio"
-              label={'Yo’q'}
-              value="Yo'q"
-              required
-              name="prepayment"
-              error={errors['prepayment']}
-              register={register}
-            />
-          </div>
-        </div>
-        <Select
-          defaultOpened
-          error={errors['month']}
-          name={'month'}
-          label={'Oyni tanlash'}
-          options={[
-            {
-              value: '1',
-              label: '1'
-            },
-            {
-              value: '2',
-              label: '2'
-            },
-            {
-              value: '3',
-              label: '3'
-            }
-          ]}
-          control={control}
-          required
-        />
-      </div>
-      <div className="row mt-30">
-        <div className="_col">
-          <h3 className="h3">Umumiy ma’lumot*</h3>
-          <div className="row mt-30">
-            <Select
-              defaultOpened
-              error={errors['year_of_construction']}
-              name={'year_of_construction'}
-              label={'Qurilgan yil'}
-              options={Array.from({ length: 25 }, (_, i) => ({ label: 2000 + i, value: 2000 + i }))}
-              control={control}
-              required
-            />
-            <Select
-              defaultOpened
-              error={errors['number_of_rooms']}
-              name={'number_of_rooms'}
-              label={'Xonalar soni'}
-              options={Array.from({ length: 5 }, (_, i) => ({ label: 1 + i, value: 1 + i }))}
-              control={control}
-              required
-            />
-          </div>
-          <h3 className="h3 mt-30">Umumiy joy*</h3>
-          <div className="inputs-row">
-            <label className={`input-label ${errors['total_place'] ? 'error' : ''}`}>
-              <input type="number" placeholder="100" {...register('total_place', { required: true })} />
-              <span>m²</span>
+      {place_type !== 'skyscraper' ? (
+        <>
+          <h3 className="h3">Narx*</h3>
+          <div className="inputs-row align-center">
+            <label className={`input-label ${errors['price'] ? 'error' : ''}`}>
+              <input type="number" placeholder="100.000.000" {...register('price', { required: true })} />
+              <span>UZS</span>
               <Pen />
             </label>
-          </div>
-        </div>
-        <div className="_col">
-          <h3 className="h3">Qo’shimcha qulayliklar</h3>
-          <div className="checkboxes">
-            <Checkbox name={'gas'} label={'Gaz'} register={register} />
-            <Checkbox name={'water'} label={'Suv'} register={register} />
-            <Checkbox name={'electric'} label={'Elektr energiya'} register={register} />
-            <Checkbox name={'internet'} label={'Internet'} register={register} />
-            <Checkbox name={'air_conditioning'} label={'Konditsioner'} register={register} />
-            <Checkbox name={'refrigerator'} label={'Muzlatgich'} register={register} />
-            <Checkbox name={'tv'} label={'Televizor'} register={register} />
-            <Checkbox name={'washing_machine'} label={'Kiryuvish mashinasi'} register={register} />
-          </div>
-        </div>
-      </div>
-      <h3 className="h3 mt-30">Qayerda joylashgan*</h3>
-      <div className={mapsArray.length > 1 ? 'address-row' : 'inputs-row'}>
-        {mapsArray.length > 1 ? (
-          <>
-            <button type="button" className="edit-address" onClick={() => setMapArray([])}>
-              {'Yozib kiritish'}
-            </button>
             <Select
-              label={getValues('address')}
-              defaultOpened
-              loading={isLoading}
-              name={'address'}
-              options={mapsArray.map((map) => ({
-                label: String(map?.formatted)?.replace('unnamed road,', ''),
-                value: map?.geometry
-              }))}
-              onSelect={(value, { label }) => {
-                setValue('address', label);
-                setLocation(value);
-                setMapArray([]);
-              }}
+              error={errors['calculation_method']}
+              name={'calculation_method'}
+              label={'Turini tanlang'}
+              options={[
+                {
+                  value: 'sotix',
+                  label: 'Sotix'
+                },
+                {
+                  value: 'm2',
+                  label: 'M²'
+                },
+                {
+                  value: 'etc',
+                  label: 'Quruq yer'
+                }
+              ]}
+              control={control}
+              required
             />
-          </>
-        ) : (
-          <label className={`input-label address ${errors['address'] ? 'error' : ''}`}>
-            <input
-              type="text"
-              placeholder="Namangan, Davlatobod, 5-kichik noxiya 1-uy"
-              {...register('address')}
-              onBlur={() => handleGetCordinate(getValues('address'))}
-            />
-            {isLoading && <LoadingIcon />}
-          </label>
-        )}
-      </div>
-      <div className="mt-30">
-        <MapContainer setValue={setValue} location={location} onSelect={() => setMapArray([])} setLoading={setIsLoading} />
-      </div>
-      <h3 className="h3 mt-30">Tavsifi*</h3>
-      <div className="inputs-row">
-        <label className={`input-label address ${errors['comment'] ? 'error' : ''}`}>
-          <textarea placeholder="Tavsifi*" {...register('comment', { required: true })} />
-        </label>
-      </div>
-      <button className="sender-btn mt-30">
+            {['apartment', 'business place'].includes(place_type) ? (
+              <Select
+                error={errors['room_floor']}
+                name={'room_floor'}
+                label={'Qavatni tanlash'}
+                options={Array.from({ length: 10 }, (_, i) => ({
+                  value: i + 1,
+                  label: i + 1
+                }))}
+                control={control}
+                required
+              />
+            ) : null}
+          </div>
+          <div className="inputs-row">
+            {watch('sale_type') === 'rent' ? (
+              <>
+                <div className="space_left">
+                  <h3 className="h3">Oldindan to’lov*</h3>
+                  <div className="checkboxes">
+                    <Checkbox type="radio" label={'Bor'} value="1" required name="advance" error={errors['advance']} register={register} />
+                    <Checkbox type="radio" label={'Yo’q'} value="0" required name="advance" error={errors['advance']} register={register} />
+                  </div>
+                </div>
+                {watch('advance') == '1' ? (
+                  <Select
+                    error={errors['advance_month']}
+                    name={'advance_month'}
+                    label={'Oyni tanlash'}
+                    options={[
+                      {
+                        value: '1',
+                        label: '1'
+                      },
+                      {
+                        value: '2',
+                        label: '2'
+                      },
+                      {
+                        value: '3',
+                        label: '3'
+                      }
+                    ]}
+                    control={control}
+                  />
+                ) : null}
+              </>
+            ) : null}
+            <div className="space_left">
+              <h3 className="h3">Narxi kelishiladimi?</h3>
+              <div className="checkboxes">
+                <Checkbox type="radio" label={'Ha'} value="1" required name="bargain" error={errors['bargain']} register={register} />
+                <Checkbox type="radio" label={'Yo’q'} value="0" required name="bargain" error={errors['bargain']} register={register} />
+              </div>
+            </div>
+          </div>
+          <div className="row mt-30">
+            <div className="_col">
+              <h3 className="h3">Umumiy ma’lumot*</h3>
+              <div className="row mt-30">
+                {place_type === 'dry land' ? null : (
+                  <Select
+                    error={errors['construction_year']}
+                    name={'construction_year'}
+                    label={'Qurilgan yil'}
+                    options={Array.from({ length: 25 }, (_, i) => ({ label: 2000 + i, value: 2000 + i }))}
+                    control={control}
+                    required
+                  />
+                )}
+                {place_type === 'dry land' ? null : (
+                  <Select
+                    error={errors['room_count']}
+                    name={'room_count'}
+                    label={'Xonalar soni'}
+                    options={Array.from({ length: 5 }, (_, i) => ({ label: 1 + i, value: 1 + i }))}
+                    control={control}
+                    required
+                  />
+                )}
+              </div>
+              <h3 className="h3 mt-30">Umumiy joy*</h3>
+              <div className="inputs-row">
+                <label className={`input-label ${errors['m2'] ? 'error' : ''}`}>
+                  <input type="number" placeholder="100" {...register('m2', { required: true })} />
+                  <span>m²</span>
+                  <Pen />
+                </label>
+              </div>
+            </div>
+            <div className="_col">
+              <h3 className="h3">Qo’shimcha qulayliklar</h3>
+              <div className="checkboxes">
+                {amenities.length
+                  ? amenities?.map((item) => (
+                      <Checkbox key={item.id} name={'amenities'} value={item.id} label={item?.name_uz} register={register} />
+                    ))
+                  : 'Hech narsa topilmadi'}
+              </div>
+            </div>
+          </div>
+          <h3 className="h3 mt-30">Qayerda joylashgan*</h3>
+          <div className={mapsArray.length > 1 ? 'address-row' : 'inputs-row'}>
+            {mapsArray.length > 1 ? (
+              <>
+                <button type="button" className="edit-address" onClick={() => setMapArray([])}>
+                  {'Yozib kiritish'}
+                </button>
+                <Select
+                  label={getValues('address')}
+                  loading={isLoading}
+                  name={'address'}
+                  options={mapsArray.map((map) => ({
+                    label: String(map?.formatted)?.replace('unnamed road,', ''),
+                    value: map?.geometry
+                  }))}
+                  onSelect={(value, { label }) => {
+                    setValue('address', label);
+                    setValue('latitude', value?.lat);
+                    setValue('longitude', value?.lng);
+                    setLocation(value);
+                    setMapArray([]);
+                  }}
+                />
+              </>
+            ) : (
+              <label className={`input-label address ${errors['address'] ? 'error' : ''}`}>
+                <input
+                  type="text"
+                  placeholder="Namangan, Davlatobod, 5-kichik noxiya 1-uy"
+                  {...register('address')}
+                  onBlur={() => handleGetCordinate(getValues('address'))}
+                />
+                {isLoading && <LoadingIcon />}
+              </label>
+            )}
+          </div>
+          <div className="mt-30">
+            <MapContainer setValue={setValue} location={location} onSelect={() => setMapArray([])} setLoading={setIsLoading} />
+          </div>
+          <h3 className="h3 mt-30">Tavsifi*</h3>
+          <div className="inputs-row">
+            <label className={`input-label address ${errors['description'] ? 'error' : ''}`}>
+              <textarea placeholder="Tavsifi*" {...register('description', { required: true })} />
+            </label>
+          </div>
+        </>
+      ) : null}
+      <button className={`sender-btn mt-30 ${place_type === 'skyscraper' ? 'disabled' : ''}`} disabled={place_type === 'skyscraper'}>
         <span>Saqlash</span>
         <Save />
       </button>

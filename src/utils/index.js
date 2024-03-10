@@ -25,3 +25,9 @@ export const formatFileSize = (bytes) => {
 
   return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
 };
+
+export const formatTime = (time) => {
+  const minutes = Math.floor(time / 60);
+  const remainingSeconds = time % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+};

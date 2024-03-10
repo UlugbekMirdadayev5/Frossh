@@ -1,26 +1,53 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card } from 'components/card';
-import { createPagination } from 'utils/createPagination';
+import axios from 'axios';
+import { LoadingIcon } from 'assets/svgs';
 
 const MyAnnouncements = () => {
-  const data = Array.from({ length: 6 }, (_, i) => i + 1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [announcements, setAnnouncements] = useState([]);
+  const getAnnouncements = useCallback(() => {
+    if (announcements?.data) return;
+    setLoading(true);
+    axios
+      .get('https://api.frossh.uz/api/announcement/get-by-user', {
+        headers: {
+          Authorization: 'Bearer 59|912IEqPlHGAthZX6pFeYoAwhVq4bzbXi0EaNtMR9b42777c6'
+        }
+      })
+      .then(({ data }) => {
+        setLoading(false);
+        setAnnouncements(data?.result);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err, 'err');
+      });
+  }, [announcements?.data]);
+
+  useEffect(() => {
+    return () => {
+      getAnnouncements();
+    };
+  }, [getAnnouncements]);
   return (
     <>
+      {loading && <LoadingIcon />}
       <div className={'cards-container'}>
-        {data.map((item) => (
-          <Card key={item} item={item + currentPage} editable />
+        {announcements?.data?.map((item) => (
+          <Card key={item?.id} item={item} editable />
         ))}
       </div>
       <div className="paginations">
-        {createPagination(currentPage, 5).map((item, key) => (
+        {announcements?.links?.map((item) => (
           <button
-            key={item + key}
+            dangerouslySetInnerHTML={{ __html: item?.label?.replace(/\b(Previous|Next)\b/g, '')?.trim() }}
+            key={item?.label}
             onClick={() => setCurrentPage(item === '...' ? currentPage : item)}
-            className={currentPage === item ? 'active' : undefined}
-          >
-            {item}
-          </button>
+            className={item?.active ? 'active' : undefined}
+            disabled={!item?.url}
+          />
         ))}
       </div>
     </>

@@ -18,13 +18,11 @@ const MapContainer = ({ setValue, location, onSelect, setLoading }) => {
     axios
       .get(apiUrl, { headers })
       .then(({ data }) => {
-        console.log('====================================');
-        console.log(data);
-        console.log('====================================');
         setLoading(false);
         if (data.status.message === 'OK') {
-          console.log('Location Name:', data?.results?.[0]?.formatted);
           setValue('address', String(data?.results?.[0]?.formatted?.replace('unnamed road,', '')));
+          setValue('latitude', data?.results[0]?.geometry?.lat);
+          setValue('longitude', data?.results[0]?.geometry?.lng);
           onSelect && onSelect(data);
         }
       })
@@ -57,7 +55,7 @@ export const MapComponent = ({ latitude, longitude, ...props }) => {
     setIframeSrc(
       `https://www.google.com/maps/embed/v1/view?key=AIzaSyD4-Tql8MsjYikxxPerVehVN4lf95zzgHg&center=${latitude},${longitude}&zoom=15`
     );
-  }, [latitude, longitude]);
+  }, [latitude, longitude, iframeSrc]);
 
   return (
     iframeSrc &&

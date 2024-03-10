@@ -18,6 +18,13 @@
   opacity: 1;
   transition: 100ms ease;
 }
+.custome-select[disabled] {
+  opacity: 0.6;
+  cursor: no-drop;
+}
+.custome-select[disabled] * {
+  pointer-events: none;
+}
 @scope (.custome-select) {
   .relative {
     position: relative;
@@ -61,6 +68,10 @@
     cursor: pointer;
     display: table;
     width: 100%;
+  }
+  .options .option:hover {
+    background-color: #0085af;
+    color: #fff;
   }
   .options .option:first-child {
     padding-top: 35px;

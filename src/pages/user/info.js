@@ -149,10 +149,10 @@ export default function UserDashboard() {
               <label htmlFor="">
                 <p>Viloyat:</p>
                 <select name="region_id" onChange={(e) => getDistrict(e.target.value)}>
-                  <option defaultValue={profileInfo?.region.name_uz}>{profileInfo?.region.name_uz}</option>
+                  <option defaultValue={profileInfo?.region?.name_uz}>{profileInfo?.region?.name_uz}</option>
                   {regions.map((region, index) => (
                     <option value={region.id} key={index}>
-                      {region.name_uz}
+                      {region?.name_uz}
                     </option>
                   ))}
                 </select>
@@ -160,10 +160,10 @@ export default function UserDashboard() {
               <label htmlFor="">
                 <p>Shahar:</p>
                 <select name="district_id" onChange={(e) => getQuarters(e.target.value)}>
-                  <option defaultValue={profileInfo?.district.name_uz}>{profileInfo?.district.name_uz}</option>
+                  <option defaultValue={profileInfo?.district?.name_uz}>{profileInfo?.district?.name_uz}</option>
                   {districts.map((region, index) => (
                     <option value={region.id} key={index}>
-                      {region.name_uz}
+                      {region?.name_uz}
                     </option>
                   ))}
                 </select>
@@ -171,10 +171,10 @@ export default function UserDashboard() {
               <label htmlFor="">
                 <p>MFY:</p>
                 <select name="quarter_id">
-                  <option defaultValue={profileInfo?.quarter.name_uz}>{profileInfo?.quarter.name_uz}</option>
+                  <option defaultValue={profileInfo?.quarter?.name_uz}>{profileInfo?.quarter?.name_uz}</option>
                   {quarters.map((region, index) => (
                     <option value={region.id} key={index}>
-                      {region.name_uz}
+                      {region?.name_uz}
                     </option>
                   ))}
                 </select>
