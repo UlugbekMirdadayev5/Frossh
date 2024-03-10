@@ -30,7 +30,6 @@ export default function Auth() {
   const [unreg, setUnreg] = useState(false);
   //regist
 
-  
   const onRegister = (data) => {
     axios
       .post(
