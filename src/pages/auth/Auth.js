@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import './auth.css';
-import regleft from '../../assets/images/regleft.png';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import OtpInput from 'react-otp-input';
-
+import Cookies from 'js-cookie';
+import regleft from '../../assets/images/regleft.png';
 import trudemodal from '../../assets/images/tru.png';
 import falsemodal from '../../assets/images/false.png';
-import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
+import './auth.css';
 
 // Сохранить токен в cookie
 
@@ -31,18 +30,8 @@ export default function Auth() {
   const [unreg, setUnreg] = useState(false);
   //regist
 
-  useEffect(() => {
-    const token = Cookies.get('token');
-    if (token === '' || token === null || token === undefined) {
-      setIslogin(false);
-    } else {
-      setIslogin(true);
-      setUnreg(true);
-    }
-  }, []); // <<--- Unutmay, useEffect faqat bir marta ishga tushiriladi, [] ichidagi array esa o'zgaruvchilar ro'yhati
-
-  const onSubmit = async (data) => {
-    await axios
+  const onRegister = (data) => {
+    axios
       .post(
         'https://api.frossh.uz/api/auth/register',
         {
@@ -58,28 +47,21 @@ export default function Auth() {
           }
         }
       )
-      .then((response) => {
-        console.log(response.data);
-        if (response.data.result == 'Successfully registered and sent code.') {
-          console.log('omad');
-          setSms(true);
-          setNum(data.phone);
-        }
+      .then(({ data }) => {
+        console.log(data);
+        setSms(true);
+        setNum(data.phone);
+        reset();
       })
       .catch((error) => {
         console.log(error.response.data);
-
-        if (error.response.data.message == 'The phone number field must be unique.') {
-          setIslogin(true);
-          setUnreg(true);
-        }
+        setIslogin(true);
+        setUnreg(true);
       });
-    setNum(data.phone);
-    reset();
   };
 
   //Code/verification
-  const onSubmit2 = async (data) => {
+  const onVerificationCode = async (data) => {
     await axios
       .post(
         'https://api.frossh.uz/api/auth/verify',
@@ -129,7 +111,7 @@ export default function Auth() {
   // useEffect
   // api/auth/resend
   //Login
-  const onSubmit3 = async (data) => {
+  const onLogin = async (data) => {
     console.log(data.phone);
 
     await axios
@@ -161,7 +143,7 @@ export default function Auth() {
     reset();
   };
 
-  const onSubmit4 = async (data) => {
+  const onResendMessage = async (data) => {
     console.log(data);
 
     await axios
@@ -187,7 +169,7 @@ export default function Auth() {
       });
   };
 
-  const onSubmit5 = async (data) => {
+  const onUpdate = async (data) => {
     const token = Cookies.get('token');
     await axios
       .put(
@@ -213,7 +195,7 @@ export default function Auth() {
       });
   };
 
-  const onSubmit6 = async () => {
+  const handleLogout = async () => {
     const token = Cookies.get('token');
     console.log(token);
     await axios
@@ -246,10 +228,10 @@ export default function Auth() {
       <div className="register-card">
         <div className="reg-card-left">
           <p> {islogin ? 'xisobga kirish' : 'Ro’yxatdan o’tish'}</p>
-          <img src={regleft} alt="" />
+          <img src={regleft} alt="images-left" />
         </div>
         <div className="reg-card-register">
-          <form onSubmit={handleSubmit(refresh ? onSubmit5 : unreg ? onSubmit3 : onSubmit)}>
+          <form onSubmit={handleSubmit(refresh ? onUpdate : unreg ? onLogin : onRegister)}>
             <p>Malumotlaringizni kiriting</p>
             {unreg ? null : (
               <>
@@ -292,7 +274,7 @@ export default function Auth() {
             ) : null}
 
             {refresh ? <button onClick={() => setRefresh(false)}>Back</button> : null}
-            {islogin ? <button onClick={() => onSubmit6()}>Log out</button> : null}
+            {islogin ? <button onClick={() => handleLogout()}>Log out</button> : null}
             {/* {islogin ? <button onClick={() => setRefresh(true)}>Refresh</button> : null} */}
           </form>
         </div>
@@ -320,12 +302,12 @@ export default function Auth() {
             <span>00:59</span>
             {code ? null : <span>Code is not correct.</span>}
             <span>
-              Kod kelmadimi? <button onClick={() => onSubmit4(otp)}>Qayta yuborish</button>
+              Kod kelmadimi? <button onClick={() => onResendMessage(otp)}>Qayta yuborish</button>
             </span>
 
             {/* <button onClick={() => setTruemodal(true)}>Yuborish</button> */}
 
-            <button onClick={() => onSubmit2(otp)}>Yuborish</button>
+            <button onClick={() => onVerificationCode(otp)}>Yuborish</button>
           </div>
         </div>
       )}
