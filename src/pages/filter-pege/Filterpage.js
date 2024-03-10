@@ -134,26 +134,27 @@ export default function Filterpage() {
               control={control}
               required
             />
-            <Checkbox type="radio" name={'buy_type'} value={'buy'} label={'Sotib olish'} register={register} />
-            <Checkbox type="radio" name={'buy_type'} value={'sell'} label={'Ijaraga olish'} register={register} />
+            <div className="checkboxes">
+              <Checkbox type="radio" name={'buy_type'} value={'buy'} label={'Sotib olish'} register={register} />
+              <Checkbox type="radio" name={'buy_type'} value={'sell'} label={'Ijaraga olish'} register={register} />
+            </div>
             <p id="v">viloyatlar</p>
             <AccordionDynamicHeight
               name="buy_type"
               header={<p>Yashirish</p>}
               body={
-                <div>
-                  <Checkbox type="radio" name="buy_type" value="buy" label="Andijon" register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Buxoro " register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Farg'ona" register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Jizzax " register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Namangan " register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Navoiy " register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Qashqadaryo " register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Qoraqalpoq" register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Samarqand " register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Sirdaryo " register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Surxondaryo" register={register} />
-                  <Checkbox type="radio" name="buy_type" value="sell" label="Toshkent" register={register} />
+                <div className="checkboxes">
+                  <Checkbox type="radio" name="region" value="Andijon" label="Andijon" register={register} />
+                  <Checkbox type="radio" name="region" value="Buxoro" label="Buxoro " register={register} />
+                  <Checkbox type="radio" name="region" value="Farg'ona" label="Farg'ona" register={register} />
+                  <Checkbox type="radio" name="region" value="Jizzax" label="Jizzax " register={register} />
+                  <Checkbox type="radio" name="region" value="Jizzax" label="Jizzax " register={register} />
+                  <Checkbox type="radio" name="region" value="Navoiy" label="Navoiy " register={register} />
+                  <Checkbox type="radio" name="region" value="Qashqadaryo" label="Qashqadaryo" register={register} />
+                  <Checkbox type="radio" name="region" value="Samarqand" label="Samarqand" register={register} />
+                  <Checkbox type="radio" name="region" value="Sirdaryo" label="Sirdaryo " register={register} />
+                  <Checkbox type="radio" name="region" value="Surxondaryo" label="Surxondaryo" register={register} />
+                  <Checkbox type="radio" name="region" value="Toshkent" label="Toshkent" register={register} />
                 </div>
               }
             />
@@ -176,8 +177,8 @@ export default function Filterpage() {
             />
           </form>
         </div>
-        <div className="f-right">
-          <div className={'cards-container yangicard'}>
+        <div className="f-right personinfo">
+          <div className={'cards-container new-card-style'}>
             {data.map((item) => (
               <Card key={item} item={item + currentPage} editable />
             ))}

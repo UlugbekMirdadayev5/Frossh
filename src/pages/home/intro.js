@@ -11,12 +11,12 @@ const Intro = () => {
     reset();
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const searchBar = (
     <div className="search-bar">
       <input type="text" placeholder="Qidirish" {...register('search-bar-frosh', { required: true })} />
-      <button type="submit" onClick={() => navigate('/Filterpage')}>
+      <button type="submit" onClick={() => navigate('/filterpage')}>
         <Search />
       </button>
     </div>

@@ -18,7 +18,9 @@ const Announcements = () => {
       });
   }, []);
   useEffect(() => {
-    getTopAnnouncements();
+    return () => {
+      getTopAnnouncements();
+    };
   }, [getTopAnnouncements]);
   return (
     <div className="container">

@@ -10,9 +10,11 @@ import falsemodal from '../../assets/images/false.png';
 import './auth.css';
 import { toast } from 'react-toastify';
 import { formatTime } from 'utils';
+import { LoadingIcon } from 'assets/svgs';
 
 export default function Auth() {
   const [num, setNum] = useState();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {
     register,
@@ -36,44 +38,38 @@ export default function Auth() {
 
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    if (seconds === 0) {
-      clearInterval();
-      // Do something when countdown reaches zero
-    }
-  }, [seconds]);
-
   //Code/verification
   const onVerificationCode = (data) => {
-    if (data) {
-      axios
-        .post(
-          'https://api.frossh.uz/api/auth/verify',
-          {
-            code: data,
-            phone_number: num
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json'
-            }
+    setLoading(true);
+    axios
+      .post(
+        'https://api.frossh.uz/api/auth/verify',
+        {
+          code: data,
+          phone_number: num
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
           }
-        )
-        .then((response) => {
-          setStep('modal-success');
-          Cookies.set('token', response?.data?.result?.token);
-        })
-        .catch((error) => {
-          setStep('modal-reject');
-          console.log(error);
-          toast.error(error?.response?.data?.message || 'Xatolik bor!');
-        });
-    }
+        }
+      )
+      .then((response) => {
+        setLoading(false);
+        setStep('modal-success');
+        Cookies.set('token', response?.data?.result?.token);
+      })
+      .catch((error) => {
+        setLoading(false);
+        setStep('modal-reject');
+        console.log(error);
+        toast.error(error?.response?.data?.message || 'Xatolik bor!');
+      });
   };
   //Login
   const onLogin = (data) => {
+    setLoading(true);
     axios
       .post(
         'https://api.frossh.uz/api/auth/login',
@@ -88,12 +84,14 @@ export default function Auth() {
         }
       )
       .then(() => {
+        setLoading(false);
         setNum(data.phone);
         setStep('modal-otp');
-        setSeconds(60)
+        setSeconds(60);
         reset();
       })
       .catch((error) => {
+        setLoading(false);
         console.log(error?.response?.data);
         toast.error(error?.response?.data?.message || 'Xatolik bor!');
       });
@@ -154,9 +152,7 @@ export default function Auth() {
     delete data.year;
     delete data.month;
     delete data.day;
-    if (data) {
-      return console.log(data);
-    }
+    setLoading(true);
     axios
       .post(
         'https://api.frossh.uz/api/auth/register',
@@ -173,11 +169,16 @@ export default function Auth() {
           }
         }
       )
-      .then(({ data }) => {
+      .then((response) => {
+        console.log(response);
+        setLoading(false);
         setNum(data.phone);
+        setStep('modal-otp');
+        setSeconds(60);
         reset();
       })
       .catch((error) => {
+        setLoading(false);
         console.log(error?.response?.data);
         toast.error(error?.response?.data?.message || 'Xatolik bor!');
       });
@@ -304,7 +305,7 @@ export default function Auth() {
           <input
             {...register('phone', { required: true, pattern: { value: /^[0-9]{12}$/ } })}
             type="text"
-            placeholder="+998"
+            placeholder="998"
             className={errors.phone ? 'error' : ''}
           />
           {step !== 'login' ? (
@@ -356,7 +357,10 @@ export default function Auth() {
                   />
                   <div className="options">
                     {watch('month')
-                      ? Array.from({ length: months.find((item) => item?.value === watch('month'))?.days }, (_, i) => i + 1).map((item) => (
+                      ? Array.from(
+                          { length: months.find((item) => item?.value === watch('month'))?.days },
+                          (_, i) => `${i + 1 < 9 ? '0' : ''}${i + 1}`
+                        ).map((item) => (
                           <div
                             className="option"
                             key={item}
@@ -421,7 +425,9 @@ export default function Auth() {
             </div>
           )}
 
-          <button type="submit">Sms kod yuborish</button>
+          <button type="submit" disabled={loading}>
+            {loading ? <LoadingIcon color={'#fff'} /> : 'Sms kod yuborish'}
+          </button>
         </form>
       </div>
 
@@ -443,7 +449,7 @@ export default function Auth() {
                 value={otp}
                 onChange={setOtp}
                 numInputs={4}
-                renderInput={(props) => <input {...props} />}
+                renderInput={(props) => <input {...props} required />}
               />
               <span>{formatTime(seconds)}</span>
               {seconds ? null : (

@@ -4,20 +4,23 @@
   width: 100%;
   background-color: #fff;
   padding: 55px 0;
+  gap: 50px;
+  align-items: flex-start;
 }
 .f-left {
-  width: 20%;
-  height: 100vh;
+  flex: 0.2;
   padding-top: 55px;
   gap: 20px;
 }
 .f-right {
-  width: 70%;
+  flex: 0.8;
+  padding-top: 55px;
 }
-
-.yangicard > div {
-  width: 277px;
-  height: 399px;
+.filterpage .custome-checkbox p {
+  font-size: 23.65px;
+}
+.new-card-style > div {
+  width: calc(50% / 2);
 }
 
 .input-rpogress {
