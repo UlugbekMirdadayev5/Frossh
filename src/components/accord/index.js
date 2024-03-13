@@ -1,15 +1,14 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useRef, useEffect } from 'react';
 import './style.css';
 
-const AccordionDynamicHeight = ({ body, header, headerOpen, classes = { header: '', body: '' } }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [contentHeight, setContentHeight] = useState(0);
+const AccordionDynamicHeight = ({ body, header, headerOpen, classes = { header: '', body: '' }, defaultOpened = false }) => {
   const contentRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(defaultOpened || false);
+  const [contentHeight, setContentHeight] = useState(defaultOpened ? contentRef?.current?.scrollHeight : 0);
 
   useEffect(() => {
     setContentHeight(contentRef?.current?.scrollHeight);
-  }, [isOpen]);
+  }, [isOpen, defaultOpened, contentRef?.current?.scrollHeight]);
 
   useEffect(() => {
     const handleResize = () => {

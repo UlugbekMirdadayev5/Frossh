@@ -35,7 +35,6 @@ import GooglePlay from '../../assets/images/Googleplay.png';
 import Click from '../../assets/images/click.png';
 import Payme from '../../assets/images/payme.png';
 
-// eslint-disable-next-line react/prop-types
 const LoadingIcon = ({ color, size = '48px', ...props }) => (
   <span style={color && { '--loader-color': color, '--loader-size': size }} className="loader" {...props}></span>
 );

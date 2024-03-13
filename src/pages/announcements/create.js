@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useForm } from 'react-hook-form';
@@ -415,7 +414,7 @@ const CreateAnnouncement = () => {
                     <Checkbox type="radio" label={'Yo’q'} value="0" required name="advance" error={errors['advance']} register={register} />
                   </div>
                 </div>
-                {watch('advance') == '1' ? (
+                {watch('advance') === '1' ? (
                   <Select
                     error={errors['advance_month']}
                     name={'advance_month'}
