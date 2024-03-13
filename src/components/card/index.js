@@ -6,7 +6,7 @@ import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
-import { Eye, Pen, Reload } from 'assets/svgs';
+import { Eye, Pen, Reload } from '../../assets/svgs';
 
 // eslint-disable-next-line react/prop-types
 export const Card = ({ item, editable = false }) => {

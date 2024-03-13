@@ -2,8 +2,8 @@ import { useCallback, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import './style.css';
-import * as icons from 'assets/svgs';
-import { Card } from 'components/card';
+import * as icons from '../../assets/svgs';
+import { Card } from '../../components/card';
 
 const Single = () => {
   const { id } = useParams();

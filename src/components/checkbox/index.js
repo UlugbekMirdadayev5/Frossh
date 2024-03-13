@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
-import { Checkbox as CheckboxSvg } from 'assets/svgs';
+import { Checkbox as CheckboxSvg } from '../../assets/svgs';
 import './style.css';
 
 const Checkbox = ({ name, register, type = 'checkbox', label, error, value, required }) => {

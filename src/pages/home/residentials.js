@@ -4,7 +4,7 @@ import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
-import { Arrow } from 'assets/svgs';
+import { Arrow } from '../../assets/svgs';
 
 const Residentials = () => {
   const sliderRef = useRef();

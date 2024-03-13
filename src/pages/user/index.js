@@ -4,7 +4,7 @@ import Person from './info';
 import './style.css';
 import MyAnnouncements from './my-announcements';
 import Payment from './payme';
-import { Announcement, Plus, User, Wishes } from 'assets/svgs';
+import { Announcement, Plus, User, Wishes } from '../../assets/svgs';
 
 export default function UserInfo() {
   const navigate = useNavigate();

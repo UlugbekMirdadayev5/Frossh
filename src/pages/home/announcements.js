@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Card } from 'components/card';
-// import { createPagination } from 'utils/createPagination';
+import { Card } from '../../components/card';
+// import { createPagination } from '../../utils/createPagination';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
