@@ -1,11 +1,10 @@
-/* eslint-disable react/prop-types */
 import React, { useRef, useState, memo } from 'react';
 import { Controller } from 'react-hook-form';
 import { ArrowSelect, LoadingIcon } from '../../assets/svgs';
 import { useClickOutside } from '../../utils';
 import './style.css';
 
-const Select = ({ label, name, onSelect, options, defaultOpened, control, error, required, loading, disabled }) => {
+const Select = ({ label, name, onSelect, options, defaultOpened, control, error, required, loading, disabled, defaultValue = null }) => {
   const ref = useRef();
 
   const handleChange = (value, onChange, setValue, setOpen, option) => {
@@ -17,7 +16,7 @@ const Select = ({ label, name, onSelect, options, defaultOpened, control, error,
 
   const SelectComponent = ({ onChange, onBlur, value }) => {
     const [open, setOpen] = useState(defaultOpened || false);
-    const [valueSelect, setValue] = useState(null);
+    const [valueSelect, setValue] = useState(defaultValue);
     useClickOutside(ref, () => {
       setOpen(false);
     });

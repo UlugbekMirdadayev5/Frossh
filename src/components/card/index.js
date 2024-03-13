@@ -8,7 +8,6 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 import { Eye, Pen, Reload } from '../../assets/svgs';
 
-// eslint-disable-next-line react/prop-types
 export const Card = ({ item, editable = false }) => {
   const swiperRef = useRef(null);
   const slideToIndex = useCallback((index) => {

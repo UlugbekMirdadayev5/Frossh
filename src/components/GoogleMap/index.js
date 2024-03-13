@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
 import axios from 'axios';
