@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { routes } from 'routes';
-import 'global/style.css';
-import Header from 'components/header';
-import Footer from 'components/footer';
+import { routes } from './routes';
+import './global/style.css';
+import Header from './components/header';
+import Footer from './components/footer';
 
 function App() {
   const { pathname } = useLocation();

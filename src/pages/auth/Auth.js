@@ -9,8 +9,8 @@ import trudemodal from '../../assets/images/tru.png';
 import falsemodal from '../../assets/images/false.png';
 import './auth.css';
 import { toast } from 'react-toastify';
-import { formatTime } from 'utils';
-import { LoadingIcon } from 'assets/svgs';
+import { formatTime } from '../../utils';
+import { LoadingIcon } from '../../assets/svgs';
 
 export default function Auth() {
   const [num, setNum] = useState();

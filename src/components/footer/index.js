@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Fecebook, Instagram, Telegram, Appstore, GooglePlay } from 'assets/svgs';
+import { Fecebook, Instagram, Telegram, Appstore, GooglePlay } from '../../assets/svgs';
 import './style.css';
 
 const Footer = () => {

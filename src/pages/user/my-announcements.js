@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Card } from 'components/card';
+import { Card } from '../../components/card';
 import axios from 'axios';
-import { LoadingIcon } from 'assets/svgs';
+import { LoadingIcon } from '../../assets/svgs';
 
 const MyAnnouncements = () => {
   const [currentPage, setCurrentPage] = useState(1);

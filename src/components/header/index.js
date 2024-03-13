@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './style.css';
-import { ReactComponent as Bayroq } from 'assets/svgs/flagUz.svg';
+import { ReactComponent as Bayroq } from '../../assets/svgs/flagUz.svg';
 
 const Header = () => {
   return (

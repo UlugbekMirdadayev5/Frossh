@@ -28,14 +28,17 @@ import { ReactComponent as Eye } from './eye.svg';
 import { ReactComponent as Pen } from './pen.svg';
 import { ReactComponent as Reload } from './reload.svg';
 import { ReactComponent as Checkbox } from './checkbox.svg';
+import { ReactComponent as NotFound } from './404.svg';
 
-import Appstore from 'assets/images/Appstore.png';
-import GooglePlay from 'assets/images/Googleplay.png';
-import Click from 'assets/images/click.png';
-import Payme from 'assets/images/payme.png';
+import Appstore from '../../assets/images/Appstore.png';
+import GooglePlay from '../../assets/images/Googleplay.png';
+import Click from '../../assets/images/click.png';
+import Payme from '../../assets/images/payme.png';
 
 // eslint-disable-next-line react/prop-types
-const LoadingIcon = ({ color }) => <span style={color && { '--loader-color': color }} className="loader"></span>;
+const LoadingIcon = ({ color, size = '48px', ...props }) => (
+  <span style={color && { '--loader-color': color, '--loader-size': size }} className="loader" {...props}></span>
+);
 
 export {
   Exit,
@@ -68,6 +71,7 @@ export {
   Pen,
   Reload,
   Checkbox,
+  NotFound,
   LoadingIcon,
   // image sources
   Appstore,

@@ -21,38 +21,6 @@
     white-space: pre;
   }
 
-  .content .form .search-bar {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 6px 6px 6px 16px;
-    border-radius: 15px;
-    background: var(--light);
-    box-shadow: 0px 0px 14px 0px rgba(0, 0, 0, 0.25);
-    margin-top: 150px;
-    gap: 30px;
-    color: var(--secondary);
-    font-size: 22.65px;
-    font-weight: 400;
-    border: 2px solid var(--light);
-    transition: 100ms linear;
-  }
-  .content .form .search-bar:hover,
-  .content .form .search-bar:has(.filter.open),
-  .content .form .search-bar:has(input:focus) {
-    border-color: #3498db;
-  }
-  .content .form input {
-    flex: 1;
-    background: none;
-    border: 0;
-    height: 100%;
-    height: 44px;
-    font-size: inherit;
-    position: relative;
-    z-index: 4;
-  }
-
   .content .form button {
     border: 0;
     background: none;
@@ -63,14 +31,6 @@
     font-size: inherit;
     position: relative;
     z-index: 4;
-  }
-
-  .content .form button[type='submit'] {
-    align-items: center;
-    border-radius: 15px;
-    background: var(--primary);
-    box-shadow: 0px 0px 6.1px 0px rgba(0, 0, 0, 0.25);
-    padding: 8px;
   }
   .residentials {
     max-width: 1560px;
@@ -126,10 +86,62 @@
     display: flex;
     gap: 80px 40px;
     flex-wrap: wrap;
-    margin-bottom:40px
+    margin-bottom: 40px;
   }
 
   .justify-between {
     justify-content: space-between;
   }
+}
+.filterpage .search-bar,
+.home-container .search-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 6px 6px 6px 16px;
+  border-radius: 15px;
+  background: var(--light);
+  box-shadow: 0px 0px 14px 0px rgba(0, 0, 0, 0.25);
+  margin-top: 150px;
+  gap: 30px;
+  color: var(--secondary);
+  font-size: 22.65px;
+  font-weight: 400;
+  border: 2px solid var(--light);
+  transition: 100ms linear;
+}
+.filterpage .search-bar {
+  margin-top: 0px;
+}
+
+.filterpage .search-bar:has(input:valid),
+.filterpage .search-bar:has(.filter.open),
+.filterpage .search-bar:has(input:focus),
+.home-container .search-bar:hover,
+.home-container .search-bar:has(.filter.open),
+.home-container .search-bar:has(input:focus) {
+  border-color: #3498db;
+  background-color: #fff;
+}
+
+.filterpage .form input,
+.home-container .form input {
+  flex: 1;
+  background: none;
+  border: 0;
+  height: 100%;
+  height: 44px;
+  font-size: inherit;
+  position: relative;
+  z-index: 4;
+}
+.filterpage .form button[type='submit'],
+.content .form button[type='submit'] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  background: var(--primary);
+  box-shadow: 0px 0px 6.1px 0px rgba(0, 0, 0, 0.25);
+  padding: 8px;
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Click, Payme } from 'assets/svgs';
+import { Click, Payme } from '../../assets/svgs';
 import './style.css';
 
 const types = [

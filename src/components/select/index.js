@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import React, { useRef, useState, memo } from 'react';
 import { Controller } from 'react-hook-form';
-import { ArrowSelect, LoadingIcon } from 'assets/svgs';
-import { useClickOutside } from 'utils';
+import { ArrowSelect, LoadingIcon } from '../../assets/svgs';
+import { useClickOutside } from '../../utils';
 import './style.css';
 
 const Select = ({ label, name, onSelect, options, defaultOpened, control, error, required, loading, disabled }) => {

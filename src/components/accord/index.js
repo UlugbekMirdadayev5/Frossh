@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './style.css';
 
-const AccordionDynamicHeight = ({ body,header }) => {
+const AccordionDynamicHeight = ({ body, header, headerOpen, classes = { header: '', body: '' } }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef(null);
@@ -30,11 +30,11 @@ const AccordionDynamicHeight = ({ body,header }) => {
   return (
     <div className={`accordion-container ${isOpen ? 'open' : ''}`}>
       <div ref={contentRef} className="accordion-content" style={{ height: isOpen ? contentHeight + 'px' : 0 }}>
-        <div className="accord-body">{body}</div>
+        <div className={`accord-body ${classes.body}`}>{body}</div>
       </div>
 
-      <div aria-hidden onClick={toggleAccordion} className="accordion-header">
-        {header}
+      <div aria-hidden onClick={toggleAccordion} className={`accordion-header ${classes.header}`}>
+        {isOpen ? headerOpen || header : header}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import noProfileInfoImg from './warningUser.png';
@@ -13,11 +13,14 @@ export default function UserDashboard() {
   let token = localStorage.getItem('token');
   let profileInfo = JSON.parse(localStorage.profileInfo || '{}') || {};
 
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  };
+  const headers = useMemo(
+    () => ({
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    }),
+    [token]
+  );
 
   // GET REGIONS
   useEffect(() => {
@@ -32,7 +35,7 @@ export default function UserDashboard() {
       .catch((err) => {
         console.log(err);
       });
-  }, [regions]);
+  }, [regions, headers]);
 
   // GET DISTRICTS
   const getDistrict = (id) => {
