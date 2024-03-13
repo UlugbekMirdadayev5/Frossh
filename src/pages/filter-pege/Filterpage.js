@@ -66,11 +66,11 @@ export default function Filterpage() {
     watch
   } = useForm({
     defaultValues: {
-      repair_type: '',
+      repair_type: searchParams.get('repair_type') || '',
       sale_type: searchParams.get('sale_type') || '',
-      address: '',
-      place_type: '',
-      region_id: '',
+      place_type: searchParams.get('place_type') || '',
+      region_id: searchParams.get('region_id') || '',
+      sort: searchParams.get('sort') || '',
       m2: [0, 5],
       price: [0, 5]
     }
@@ -171,6 +171,20 @@ export default function Filterpage() {
         value: 'new',
         label: 'Yaxshi'
       }
+    ],
+    sortes = [
+      {
+        value: 'popular',
+        label: 'Ommabop'
+      },
+      {
+        value: 'cheap',
+        label: 'Arzonroq'
+      },
+      {
+        value: 'expensive',
+        label: 'Qimmatroq'
+      }
     ];
 
   return (
@@ -180,15 +194,27 @@ export default function Filterpage() {
         <div className="f-left">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Select
-              defaultValue={place_types.find((it) => it.value === searchParams.get('place_type'))?.label}
-              onSelect={(v) => setSearchParams({ ...desiredObject, place_type: v })}
-              error={errors['place_type']}
-              name={'place_type'}
-              label={'Joy turini tanlang'}
-              options={place_types}
+              defaultValue={sortes.find((it) => it.value === searchParams.get('sort'))?.label}
+              onSelect={(v) => setSearchParams({ ...desiredObject, sort: v })}
+              error={errors['sort']}
+              name={'sort'}
+              label={'Saralash'}
+              options={sortes}
               control={control}
               required
             />
+            <div className="checkboxes">
+              <Select
+                defaultValue={place_types.find((it) => it.value === searchParams.get('place_type'))?.label}
+                onSelect={(v) => setSearchParams({ ...desiredObject, place_type: v })}
+                error={errors['place_type']}
+                name={'place_type'}
+                label={'Joy turini tanlang'}
+                options={place_types}
+                control={control}
+                required
+              />
+            </div>
 
             <div className="input-progress">
               <p>Hajmi</p>
@@ -397,7 +423,7 @@ export default function Filterpage() {
               }
               body={
                 <div className="checkboxes fs-100">
-                  {amenities.map((item, i) => (
+                  {amenities?.map((item, i) => (
                     <Checkbox
                       key={item?.id}
                       onChange={(option) => {

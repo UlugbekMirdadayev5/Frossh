@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Checkbox as CheckboxSvg } from '../../assets/svgs';
 import './style.css';
 
 const Checkbox = ({ name, register, type = 'checkbox', label, error, value, required, onChange, defaultChecked }) => {
   const [v, setV] = useState(value);
-  useEffect(() => {
-    console.log(defaultChecked);
-  }, [defaultChecked]);
   return (
     <label className={`custome-checkbox ${error ? 'error' : ''}`}>
       <CheckboxSvg />
